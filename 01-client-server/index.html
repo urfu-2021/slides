@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Просмотр презентаций</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="../@lib/core.css">
+    <link rel="stylesheet" href="../@lib/theme.css">
+    <link rel="stylesheet" href="index.css">
+</head><body class="white"><div class="reveal"><div class="slides">
+
+<section class="center">
+    <h1>Клиент-Сервер</h1>
+    <h5 class="author right">@dimastark</h5>
+</section>
+
+<section data-background-image="images/client-server-expected.png" data-background-size="500px">
+</section>
+
+<section data-background-image="images/client-server-reality.png" data-background-size="500px">
+</section>
+
+<section>
+    <h2>Клиент-серверное общение <b class="fragment">TCP/IP</b></h2>
+    <ul>
+        <li class="fragment">Ethernet (Link)</li>
+        <li class="fragment">IP (Network)</li>
+        <li class="fragment">TCP/UDP (Transport)</li>
+        <li class="fragment">HTTP (Application)</li>
+    </ul>
+</section>
+
+<section data-background-image="images/front-back.png" data-background-size="300px">
+</section>
+
+<section class="center">
+    <h1>HTTP <a href="https://tools.ietf.org/html/rfc2616">(RFC-2616)</a><br></h1>
+    <h2><span class="grey">HyperText Transfer Protocol</span></h2>
+</section>
+
+<section>
+    <h2>Ресурс</h2>
+    <pre class="html"><code data-trim data-noescape>
+
+http://localhost:5000/notes?limit=10&sortBy=name
+⇡      ⇡         ⇡    ⇡     ⇡
+<span class="green">scheme</span> <span class="green">host</span>      <span class="green">port</span> <span class="green">path</span>  <span class="green">query</span>
+    </code></pre>
+</section>
+
+<section>
+    <h2>Запрос</h2>
+    <pre class="html"><code data-trim data-noescape><span class="green">POST</span> /notes <span class="grey">HTTP/1.1</span>
+<span class="magenta">Accept:</span> application/json
+<span class="magenta">Accept-Encoding:</span> gzip, deflate
+<span class="magenta">Content-Type:</span> application/json; charset=utf-8
+<span class="magenta">Host:</span> localhost:8080
+<span class="magenta">User-Agent:</span> HTTPie/0.9.3
+
+{
+    "name": "films",
+    "text": "Films to watch"
+}
+    </code></pre>
+</section>
+
+<section>
+    <h2>Ответ</h2>
+    <pre class="html"><code data-trim data-noescape><span class="grey">HTTP/1.1</span> <span class="green">200</span> OK
+<span class="magenta">Content-Length:</span> 67
+<span class="magenta">Content-Type:</span> application/json; charset=utf-8
+<span class="magenta">Date:</span> Wed, 16 Mar 2016 14:32:18 GMT
+<span class="magenta">X-Powered-By:</span> Express
+
+{
+    "createdAt": 1458138738899,
+    "name": "films",
+    "text": "Films to watch"
+}
+    </code></pre>
+</section>
+
+<section>
+    <h2>Метод</h2>
+    <pre class="html"><code data-trim data-noescape>
+
+<span class="green">GET</span>      получение ресурса
+<span class="green">POST</span>     создание ресурса
+<span class="green">DELETE</span>   удаление ресурса
+    </code></pre>
+</section>
+
+<section>
+    <h2><a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">Код ответа</a></h2>
+    <pre class="html" style="margin: 50px 0 0 100px">
+<code data-trim data-noescape>
+<span class="green">200</span> Ok                <span class="magenta">301</span> Moved Permanently
+<span class="green">201</span> Created           <span class="magenta">304</span> Not modified
+<span class="green">204</span> No content
+
+<span class="red">400</span> Bad request       <span class="red">500</span> Internal Server Error
+<span class="red">401</span> Unauthorized      <span class="red">504</span> Gateway Timeout
+<span class="red">403</span> Forbidden
+<span class="red">404</span> Not found
+</span>
+    </code></pre>
+</section>
+
+<section>
+    <h2>Stateless</h2>
+    <p style="text-align: left;">
+        Сам не хранит состояние клиента между запросами,
+        всё состояние целиком описывается в каждом запросе
+    </p>
+</section>
+
+<section class="center">
+    <h2>Взаимодействие приложений</h2>
+</section>
+
+<section class="center">
+    <pre class="html"><code data-noescape>
+                    <span class="red">Notes</span>.find(name)
+                          ⇡    ⇡
+                     <span class="blue">method</span>    <span class="green">arguments</span>
+    </code></pre>
+</section>
+
+<section>
+    <p><a href="http://www.jsonrpc.org/specification">Remote Procedure Call</a></p>
+<div style="display: flex; justify-content: space-around;">
+<pre class="json"><code data-trim data-noescape>
+<b>Запрос</b>
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "<span class="blue">findNote</span>",
+    "params": [<span class="green">"films"</span>]
+}</code></pre>
+<pre class="json fragment"><code data-trim data-noescape>
+<b>Ответ</b>
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "name": "films",
+        "text": "..."
+    }
+}</code></pre>
+</div>
+</section>
+
+<section>
+    <p><b>RE</b>presentational <b>S</b>tate <b>T</b>ransfer</p>
+<div style="display: flex; justify-content: space-around;">
+<pre class="html"><code data-trim data-noescape>
+<b>Запрос</b>
+GET /<span class="red">notes</span>/<span class="green">films</span> HTTP/1.1
+    </code></pre>
+    <pre class="json fragment"><code data-trim data-noescape>
+<b>Ответ</b>
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+    "name": "films",
+    "text": "..."
+}
+    </code></pre>
+</div>
+</section>
+
+<section>
+    <p><a href="https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md">gRPC</a></p>
+    <pre class="html"><code data-trim data-noescape>
+    service <span class="red">Notes</span>Service {
+        rpc <span class="blue">Find</span> (NoteIdRequest) returns (Note) {}
+    }
+
+    message Note {
+        string name = 1;
+        string text = 2;
+    }
+
+    message NoteIdRequest {
+        string <span class="green">name</span> = 1;
+    }
+    </code></pre>
+</section>
+
+<section>
+    <p><a href="https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md">gRPC</a></p>
+    <pre class="javascript"><code data-trim data-noescape>
+    const { notes as <span class="red">Notes</span>Service } = grpc.load('<span class="red">notes</span>.proto');
+
+    const client = new <span class="red">Notes</span>Service('localhost:50051');
+
+    client.<span class="blue">find</span>({ name: '<span class="green">films</span>' }, (error, note) => {});
+    </code></pre>
+</section>
+
+<section>
+    <p><a href="http://facebook.github.io/graphql/draft/">GraphQL</a></p>
+    <pre class="html"><code data-trim data-noescape>
+type <span class="red">Note</span> {
+    name: String!
+    text: String
+}
+
+type Query {
+    <span class="blue">note</span>(<span class="green">name</span>: String!): <span class="red">Note</span>
+}
+    </code></pre>
+</section>
+
+<section>
+    <p><a href="http://facebook.github.io/graphql/draft/">GraphQL</a></p>
+    <pre class="json"><code data-trim data-noescape>
+POST /graphql
+Content-Type: application/json
+
+{
+    "query": "query { <span class="blue">note</span>(name: '<span class="green">films</span>') { name, text }"
+}
+    </code></pre>
+    <pre class="json fragment"><code data-trim data-noescape>
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+    "data": { "note": {"name": "films", "text": "..."} },
+    "errors": [ ... ]
+}
+    </code></pre>
+</section>
+
+<section>
+    <p><a href="https://tools.ietf.org/html/rfc6455">WebSockets</a></p>
+    <pre class="javascript"><code data-trim data-noescape>
+        const socket = new WebSocket('ws://localhost:8080');
+
+        socket.send(JSON.stringify({
+            id: '1',
+            method: '<span class="blue">findNote</span>',
+            params: ['<span class="green">films</span>']
+        });
+    </code></pre>
+
+    <pre class="javascript fragment"><code data-trim data-noescape>
+        socket.onmessage = message => {
+            const { id, method, params } = JSON.parse(message);
+
+            // ...
+            socket.send({ id, result });
+        });
+    </code></pre>
+</section>
+
+<section class="center">
+    <h1>REST</h1>
+</section>
+
+<section class="center">
+    <h5>REST определяет<br>
+        понятия (ресурсы и их представление)<br>
+        требования к взаимодействию</h5>
+</section>
+
+<section>
+    <h2>GET</h2>
+    <p>Получает состояние ресурса в одном из представлений (JSON, XML, HTML)</p>
+    <pre class="html"><code data-trim data-noescape><span class="green">GET</span> /notes
+<span class="green">GET</span> /notes/films
+<span class="green">GET</span> /notes/films/pinned
+<span class="green">GET</span> /notes?limit=10
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape><span class="green">200</span> Ok
+
+<span class="red">404</span> Not found
+<span class="red">400</span> Bad request /notes?limit=muahahaha</code></pre>
+</section>
+
+<section>
+    <h2>POST</h2>
+    <p>Создаёт новый ресурс с начальным состоянием, когда мы <span class="red">не знаем</span> его ID</p>
+    <pre class="html"><code data-trim data-noescape><span class="green">POST</span> /notes
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape><span class="green">201</span> Created
+
+<span class="red">409</span> Conflict
+    </code></pre>
+</section>
+
+<section>
+    <h2>PUT</h2>
+    <p>Создаёт новый ресурс с начальным состоянием, когда мы <span class="green">знаем</span> его ID</p>
+    <pre class="html"><code data-trim data-noescape><span class="green">PUT</span> /notes/films
+<span class="green">PUT</span> /notes/films/pinned
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape><span class="green">200</span> Ok
+<span class="green">204</span> No content
+    </code></pre>
+</section>
+
+<section>
+    <h2>PUT</h2>
+    <p>Обновляет состояние существующего ресурса <span class="green">целиком</span></p>
+    <pre class="html"><code data-trim data-noescape><span class="green">PUT</span> /notes/films
+<span class="green">PUT</span> /notes/films/pinned
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape><span class="green">200</span> Ok
+<span class="green">204</span> No content
+
+<span class="red">404</span> Not found
+    </code></pre>
+</section>
+
+<section>
+    <h2>DELETE</h2>
+    <p>Удаляет существующий ресурс</p>
+    <pre class="html"><code data-trim data-noescape><span class="green">DELETE</span> /notes/films
+<span class="green">DELETE</span> /notes/films/pinned
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape><span class="green">200</span> Ok
+<span class="green">204</span> No content
+
+<span class="red">404</span> Not found
+    </code></pre>
+</section>
+
+<section>
+    <h2>PATCH</h2>
+    <p>Обновляет состояние существующего ресурса <span class="green">частично</span></p>
+    <pre class="html"><code data-trim data-noescape><span class="green">PATCH</span> /notes/films
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape><span class="green">200</span> Ok
+<span class="green">204</span> No content
+
+<span class="red">404</span> Not found
+    </code></pre>
+</section>
+
+<section>
+    <h2>HEAD</h2>
+    <p>Запрашивает заголовки, чтобы проверить существование ресурса</p>
+    <pre class="html"><code data-trim data-noescape><span class="green">HEAD</span> /notes/films
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape><span class="green">200</span> Ok
+
+<span class="red">404</span> Not found
+    </code></pre>
+</section>
+
+<section>
+    <h2>OPTIONS</h2>
+    <p>Запрашивает правила взаимодействия, например, доступные методы</p>
+    <pre class="html"><code data-trim data-noescape><span class="green">OPTIONS</span> /search
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape>
+<span class="green">204</span> No content
+<span class="magenta">Allow:</span> OPTIONS, GET, HEAD
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape><span class="green">POST</span> /search
+    </code></pre>
+    <pre class="html"><code data-trim data-noescape>
+<span class="green">405</span> Method not allowed
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2>Идемпотентность</h2>
+    <p class="fragment">Один и тот же запрос приводит к одному и тому же состоянию</p>
+</section>
+
+<section class="center">
+</section>
+
+<section class="center">
+    <pre class="html"><code data-noescape>
+                <span class="">GET</span>       – <span class="green">да <span class="grey">(не модифицирующий)</span></span>
+                <span class="">OPTIONS</span>   – <span class="green">да <span class="grey">(не модифицирующий)</span></span>
+                <span class="">HEAD</span>      – <span class="green">да <span class="grey">(не модифицирующий)</span></span>
+                <span class="">POST</span>      – <span class="red">нет</span>
+                <span class="">PUT</span>       – <span class="green">да</span>
+                <span class="">DELETE</span>    – <span class="green">да</span>
+                <span class="">PATCH</span>     – <span class="red">нет</span>
+    </code></pre>
+</section>
+
+<section class="center">
+    <h1><a href="https://xhr.spec.whatwg.org/">XMLHttpRequest</a></h1>
+</section>
+
+<section class="center">
+    <s><h1><a href="https://xhr.spec.whatwg.org/">XMLHttpRequest</a></h1></s>
+</section>
+
+<section class="center">
+    <h1><a href="https://fetch.spec.whatwg.org/">Fetch</a></h1>
+</section>
+
+<section>
+    <h2>Fetch</h2>
+    <pre class="javascript"><code>const promise = fetch(url[, options]);
+    </code></pre>
+</section>
+
+<section>
+    <h2>options</h2>
+    <pre class="javascript"><code>{
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json'
+    },
+    body: JSON.stringify({ 
+        id:   1, 
+        name: 'films'
+    })
+}
+    </code></pre>
+</section>
+
+<section>
+    <h2>Promise</h2>
+    <pre class="flat javascript"><code>fetch('/notes')
+    .then(res => {
+        res.headers.get('Content-Type'); // application/json
+        res.status; // 200
+
+        return res.json();
+    })
+    .then(notes => {
+        console.info(notes);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    </code></pre>
+</section>
+
+<section>
+    <h2>Отмена запроса</h2>
+    <pre class="flat javascript"><code>
+const controller = new AbortController();
+const signal = controller.signal;
+fetch('/notes', { signal }); // pending
+signal.abort();
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">REST</h2>
+    <div style="display: flex; align-items: center; justify-content: center; font-size: 30px;">
+        <ul style="list-style: none">
+            <li class="red">Большое число запросов</li>
+            <li class="red fragment">Сложности в проектировании при росте зависимостей между
+                сущностями
+            </li>
+            <li class="red fragment">Лишние данные в ответе от сервера</li>
+            <li class="red fragment">Всегда необходимо помнить об обратной совместимости</li>
+            <li class="red fragment">Нет удобных инструментов для разработки</li>
+        </ul>
+    </div>
+</section>
+ 
+<section class="center" data-background-image="./images/graphql.png" data-background-size="800px">
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">GraphQL</h2>
+    <p>Язык запросов к API, а так же среда исполнения для этих запросов</p>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">GraphQL</h2>
+    <div style="display: flex; align-items: center; justify-content: center; font-size: 30px;">
+        <ul style="list-style: none">
+            <li class="green">Строгая типизация</li>
+            <li class="green fragment">Получаем только то, что действительно
+                необходимо
+            </li>
+            <li class="green fragment">Возможность получить все необходимые
+                данные за один запрос
+            </li>
+            <li class="green fragment">Отсутствие проблем с обратной
+                совместимостью и расширением
+            </li>
+            <li class="green fragment">Удобные инструменты для разработки</li>
+            <li class="green fragment">Реализации на всех популярных языках
+            </li>
+        </ul>
+    </div>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">GraphQL</h2>
+    <pre><code class="graphql" data-trim style="font-size: 20px;">
+        query {
+            note(name: "Books") {
+                name
+                text
+                comments {
+                    text
+                    author {
+                        name
+                    }
+                }
+            }
+        }
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">GraphiQL</h2>
+    <h2><a href="http://kilogram-api.yandex-urfu-2021.ru">kilogram-api</a></h2>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Types</h2>
+    <pre><code class="graphql" style="font-size: 20px;">ID, Int, Float, String, Boolean</code></pre>
+    <table>
+        <tr>
+            <td style="width: 50%;">
+                <pre><code class="fragment graphql" data-trim data-noescape style="font-size: 20px;">
+                    type User {
+                        id: ID
+                        name: String
+                    }
+                </code></pre>
+            </td>
+            <td style="width: 50%;">
+                <div style="display: flex; align-items: center; justify-content: center;">
+                    <pre><code class="fragment graphql" data-trim style="font-size: 20px;">
+                    type Comment {
+                        text: String
+                        author: User
+                    }
+                </code></pre>
+                </div>
+            </td>
+            <td style="width: 50%;">
+                <pre><code class="fragment graphql" data-trim style="font-size: 20px;" data-noescape>
+                    type Note {
+                        name: String
+                        text: String
+                        comments: [Comment<span class="hljs-type">]</span>
+                    }
+                </code></pre>
+            </td>
+        </tr>
+        <tr class="fragment">
+            <td></td>
+            <td style="width: 50%;">
+                <pre><code class="graphql" data-trim data-noescape style="font-size: 20px;">
+                    type Query {
+                        note(name: String!): Note
+                        notes: [Note<span class="hljs-type">]</span>
+                    }
+                </code></pre>
+            </td>
+        </tr>
+    </table>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Unions</h2>
+    <pre><code class="graphql" data-trim style="font-size: 20px;">
+        type Admin {
+            id: ID
+            name: String
+            accessLevel: String
+        }
+
+        type NormalUser {
+            id: ID
+            name: String
+            age: Int
+        }
+
+        union User = Admin | NormalUser
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Queries</h2>
+    <table>
+        <tr>
+            <td style="width: 50%">
+                <pre><code class="graphql" data-trim style="font-size: 20px;">
+                query {
+                    note(name: "Books") {
+                        name
+                        text
+                        comments {
+                            text
+                        }
+                    }
+                }
+                </code></pre>
+            </td>
+            <td style="width: 50%">
+                <pre class="fragment"><code class="jascript" data-trim style="font-size: 20px;">
+                {
+                    "data": {
+                        "note": {
+                            "name": "Books",
+                            "text": "Books to read",
+                            "comments": [
+                                { "text": "Очень круто!" },
+                                { "text": "А мне не очень понравилось :(" },
+                                { "text": "Peter, объяснишь почему?" },
+                            ]
+                        }
+                    }
+                }
+                </code></pre>
+            </td>
+        </tr>
+    </table>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Queries</h2>
+    <table>
+        <tr>
+            <td style="width: 50%;">
+                <pre><code class="graphql" data-trim style="font-size: 20px;">
+                    query {
+                        note(name: "Books") {
+                            text
+                        }
+
+                        user(id: 1) {
+                            name
+                        }
+                    }
+                </code></pre>
+            </td>
+            <td>
+                <pre class="fragment"><code class="javascript" data-trim style="font-size: 20px;">
+                    {
+                        "data": {
+                            "note": {
+                                "text": "Books to read"
+                            },
+                            "user": {
+                                "name": "Max"
+                            }
+                        }
+                    }
+                </code></pre>
+            </td>
+        </tr>
+    </table>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Aliases</h2>
+    <table>
+        <tr>
+            <td>
+                <pre><code class="graphql" data-trim style="font-size: 20px;">
+                    query {
+                        firstNote: note(name: "Books") {
+                            text
+                        }
+
+                        secondNote: note(name: "Films") {
+                            text
+                        }
+                    }
+                </code></pre>
+            </td>
+            <td>
+                <pre class="fragment"><code class="javascript" data-trim style="font-size: 20px;">
+                    {
+                        "data": {
+                            "firstNote": {
+                                "text": "Books to read"
+                            },
+                            "secondNote": {
+                                "text": "Films to watch"
+                            }
+                        }
+                    }
+                </code></pre>
+            </td>
+        </tr>
+    </table>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Named Queries</h2>
+    <pre><code class="graphql" data-trim style="font-size: 20px;">
+        query NotesQuery {
+            firstNote: note(name: "Books") {
+                text
+            }
+
+            secondNote: note(name: "Films") {
+                text
+            }
+        }
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Fragments</h2>
+    <pre><code class="graphql" data-trim style="font-size: 20px;">
+        fragment NoteFields on Note {
+            id
+            name
+            text
+        }
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Fragments</h2>
+    <pre><code class="graphql" data-trim style="font-size: 20px;">
+        query {
+            firstNote: note(name: "Books") {
+                ...NoteFields
+            }
+
+            secondNote: note(name: "Films") {
+                ...NoteFields
+            }
+        }
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Inline fragments</h2>
+    <pre><code class="grapqhl" data-trim data-noescape style="font-size: 20px;">
+        query {
+            users {
+                <span class="fragment">__typename</span>
+
+                ... on Admin {
+                    name
+                    accessLevel
+                }
+
+                ... on NormalUser {
+                    name
+                    age
+                }
+            }
+        }
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Variables</h2>
+    <pre><code class="graphql" data-trim style="font-size: 20px;">
+        query NoteQuery($name: String!) {
+            note(name: $name) {
+                name
+                text
+            }
+        }
+    </code></pre>
+    <pre class="fragment"><code class="javascript" data-trim style="font-size: 20px;">
+        // "variables"
+
+        { "name": "Books" }
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Directives</h2>
+    <pre><code class="graphql" data-trim data-noescape style="font-size: 20px;">
+        query NoteQuery($name: String!, $withComments: Boolean!) {
+            note(name: $name) {
+                name
+                text
+                comments @include(if: $withComments) {
+                    text
+                }
+            }
+        }
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Directives</h2>
+    <pre><code class="graphql" data-trim data-noescape style="font-size: 20px;">
+        query NoteQuery($name: String!, $withoutComments: Boolean!) {
+            note(name: $name) {
+                name
+                text
+                comments @skip(if: $withoutComments) {
+                    text
+                }
+            }
+        }
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Mutations</h2>
+    <pre><code class="grahpql" data-trim data-noescape style="font-size: 24px;">
+        mutation CreateNote($name: String!, $text: String!) {
+            createNote(name: $name, text: $text) {
+                name
+                text
+            }
+        }
+    </code></pre>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">Errors</h2>
+    <table>
+        <tr>
+            <td>
+                <pre><code class="graphql" data-trim data-noescape style="font-size: 20px;">
+                    query {
+                        note(name: "Books") {
+                            name
+                            createdAt
+                        }
+                    }
+                </code></pre>
+            </td>
+            <td>
+                <pre><code class="javascript" style="font-size: 16px" data-trim data-noescape>
+{
+    "errors": [
+        {
+            "message": "Cannot query field \"createdAt\" on type \"Note\".",
+            "locations": [
+                {
+                    "line": 4,
+                    "column": 5
+                }
+            ]
+        }
+    ]
+}
+                </code></pre>
+            </td>
+        </tr>
+    </table>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">GraphQL</h2>
+    <div style="display: flex; justify-content: center; align-items: center; font-size: 30px;">
+        <ul style="list-style: none">
+            <li class="red">Новая технология</li>
+            <li class="red fragment">Мало паттернов</li>
+            <li class="red fragment">Сложности при работе с SQL базами данных</li>
+        </ul>
+    </div>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">GraphQL</h2>
+    <div style="display: flex; justify-content: center; align-items: center; font-size: 30px;">
+        <ul style="list-style: none">
+            <s><li class="red">Новая технология</li></s>
+            <s><li class="red">Мало паттернов</li></s>
+            <li class="red">Сложности при работе с SQL базами данных</li>
+        </ul>
+    </div>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">GraphQL Клиенты</h2>
+    <table style="font-size: 30px; border-collapse: collapse">
+        <tbody>
+            <tr>
+                <td style="font-weight: bold;">Lokka</td>
+                <td>Максимально простой в использовании. Базовая поддержка запросов и мутаций.
+                    Простейшее
+                    кэширование
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Apollo</td>
+                <td>Более гибкий. Хороший баланс между функциональностью и сложностью использования</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Relay</td>
+                <td>Наиболее функциональный, из-за чего наиболее сложный в использовании. Много внимания
+                    уделено
+                    производительности (особенно на мобильных).
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section class="center">
+    <h2 style="font-weight: bold;">GraphQL</h2>
+    <div style="text-align: center; margin: 20px 0; font-size: 40px;">
+        <a style="margin: 5px 0; display: inline-block;" target="_blank"
+            href="http://facebook.github.io/graphql/">GraphQL Specification</a><br>
+        <a style="margin: 5px 0; display: inline-block;" target="_blank"
+            href="https://github.com/graphql/graphql-js">GraphQL.js</a><br>
+        <a style="margin: 5px 0; display: inline-block;" target="_blank"
+            href="http://graphql.org/learn/best-practices/">GraphQL Best Practices</a>
+    </div>
+    <h2 style="font-weight: bold;">GraphQL Clients</h2>
+    <div style="text-align: center; margin: 20px 0; font-size: 40px;">
+        <a style="margin: 5px 0; display: inline-block;" target="_blank"
+            href="https://github.com/kadirahq/lokka">Lokka</a><br>
+        <a style="margin: 5px 0; display: inline-block;" target="_blank"
+            href="http://dev.apollodata.com">Apollo</a><br>
+        <a style="margin: 5px 0; display: inline-block;" target="_blank"
+            href="https://facebook.github.io/relay/">Relay</a>
+    </div>
+</section>
+
+</div></div><script src="../@lib/core.js"></script></body></html>
