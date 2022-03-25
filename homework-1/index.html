@@ -16,20 +16,83 @@
     <section class="center">
         <h2>Домашние работы на курсе</h2>
         <ul class="size_m">
-            <li class="fragment">Работа в командах по 3-4 человека</li>
-            <li class="fragment">Один проект на весь семестр, несколько этапов, в итоге получится мессенджер</li>
+            <li class="fragment">Работа в <b>командах</b> по 3 человека</li>
+            <li class="fragment"><b>Один проект</b> на весь семестр, несколько этапов, в итоге получится мессенджер</li>
             <li class="fragment">Нужно реализовывать фронтовую часть, бэкенд (API) – уже реализован</li>
-            <li class="fragment">Будут практики, чтобы поработать очно и проконсультироваться</li>
-            <li class="fragment">Когда задание готово – его проверяет ментор</li>
+            <li class="fragment">Будут <b>практики</b>, чтобы поработать очно и проконсультироваться</li>
+            <li class="fragment">Когда задание готово – его проверяет <b>ментор</b></li>
         </ul>
     </section>
 
     <section class="center">
-        <h2>Первый этап. Формум</h2>
+        <h2>Работа в команде</h2>
         <ul class="size_m">
-            <li class="fragment">Работаем в общем репозитории https://github.com/urfu-2021/forum-team-n, n – номер команды</li>
+            <li class="fragment">Код будем писать в общем <b>репозитории</b> на <a href="https://github.com">GitHub</a></li>
+            <li class="fragment">Ознакомьтесь с <a href="https://docs.github.com/en/get-started/quickstart">Quick Start</a> по GitHub</li>
+            <li class="fragment">Рекомендуем разбить работу на задачи, например с помощью <a href="https://trello.com">trello</a></li>
+        </ul>
+    </section>
+
+    <section class="center">
+        <h2>Памятка по git. Инициализация проекта</h2>
+        <ul class="size_m">
+            <li class="fragment"><b>Клонируем</b> репозиторий своей команды <pre><code>git clone https://github.com/urfu-2021/forum-team-n.git</code></pre></li>
+            <li class="fragment">Переходим в созданную папку с репозиторием<pre><code>cd forum-team-n</code></pre></li>
+        </ul>
+    </section>
+
+    <section class="center">
+        <h2>Памятка по git. В начале задачи</h2>
+        <ul class="size_m">
+            <li class="fragment">Подтягиваем последнюю версию <b>главной ветки</b><pre><code>git pull origin main</code></pre></li>
+            <li class="fragment">Создаем <b>ветку</b> для нашей задачи<pre><code>git checkout -b feature-name main</code></pre></li>
+        </ul>
+    </section>
+
+    <section class="center">
+        <h2>Памятка по git. Коммитим изменения</h2>
+        <ul class="size_m">
+            <li class="fragment">Готовим все изменения к <b>коммиту</b><pre><code>git add .</code></pre></li>
+            <li class="fragment">Создаем <b>коммит</b><pre><code>git commit -m "Описание сделанного"</code></pre></li>
+            <li class="fragment"><b>Пушим</b> на GitHub изменения<pre><code>git push origin feature-name</code></pre></li>
+            <li class="fragment">Идем в интерфейс GitHub и создаем <b>pull request</b></li>
+        </ul>
+    </section>
+
+    <section class="center">
+        <h2>Pull request</h2>
+        <ul class="size_m">
+            <li class="fragment">Делается на вкладке <a href="https://github.com/urfu-2021/forum-team-n/pulls">https://github.com/urfu-2021/forum-team-n/pulls</a> кнопкой "New pull request"</li>
+            <li class="fragment">Перед тем как вливать изменения в main, <b>pull request должен окнуть другой участник команды</b></li>
+        </ul>
+    </section>
+
+    <section class="center">
+        <h2>Памятка по git. Ребейз</h2>
+        <ul class="size_m">
+            <li class="fragment">Нужен, чтобы в ветку задачи попали последние изменения из main</li>
+            <li class="fragment">Подтягиваем последнюю версию главной ветки<pre><code>git pull origin main</code></pre></li>
+            <li class="fragment">Делаем <b>ребейз</b><pre><code>git rebase main</code></pre></li>
+    </section>
+
+    <section class="center">
+        <h2>Памятка по git. Конфликты при ребейзе</h2>
+        <ul class="size_m">
+            <li class="fragment">Возможно, нужно будет решить <a href="https://docs.github.com/en/get-started/using-git/resolving-merge-conflicts-after-a-git-rebase">конфликты</a></li>
+            <li class="fragment">После решения конфиликтов продолжаем <b>ребейз</b>
+<pre><code>git add .
+git rebase --continue
+</code></pre>
+            </li>
+        </ul>
+    </section>
+
+    <section class="center">
+        <h2>Первый этап. Форум</h2>
+        <ul class="size_m">
+            <li class="fragment">Работаем в общем репозитории <a href="https://github.com/urfu-2021/forum-team-n">https://github.com/urfu-2021/forum-team-n</a>, n – номер команды</li>
             <li class="fragment">Делаем простой форум, куда могут отправлять сообщения анонимные пользователи</li>
-            <li class="fragment">Используем для верстки и логики HTML, CSS и JS, без использования библиотек</li>
+            <li class="fragment">Используем для верстки и логики HTML, CSS и JS, <b>без использования библиотек</b></li>
         </ul>
     </section>
 
@@ -51,7 +114,7 @@
     <section>
         <h2>Первый этап. Практика</h2>
         <ul class="size_m">
-            <li class="fragment">Следующая пара – практика</li>
+            <li class="fragment">Следующая пара – <b>практика</b></li>
             <li class="fragment">Формат – собираемся в 18:00, и до 21:00 работаем над проектом в командах, консультируемся с преподавателями</li>
             <li class="fragment">Домашнее задание нужно делать не только во время практики</li>
         </ul>
@@ -60,8 +123,8 @@
     <section>
         <h2>Первый этап. Дедлайн</h2>
         <ul class="size_m">
-            <li class="fragment">Дедлайн сдачи задания – неделя + выходные (до 3 апреля включительно, чтобы было время после практики дооформить)</li>
-            <li class="fragment">Дедлайн исправления правок от ментора – еще неделя + выходные (до 10 апреля включительно)</li>
+            <li class="fragment"><b>Дедлайн сдачи задания</b> – неделя + выходные (до <b>3 апреля</b> включительно, чтобы было время после практики дооформить)</li>
+            <li class="fragment"><b>Дедлайн исправления правок от ментора</b> – еще неделя + выходные (до <b>10 апреля</b> включительно)</li>
         </ul>
     </section>
 
