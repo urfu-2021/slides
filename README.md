@@ -7,3 +7,4 @@
 # Домашняя работа
 
 1. [Домашняя работа "Форум"](https://urfu-2021.github.io/slides/homework-1/) ([pdf](https://urfu-2021.github.io/slides/homework-1/index.pdf))
+2. [Домашняя работа "Мессенджер"](https://urfu-2021.github.io/slides/homework-2/) ([pdf](https://urfu-2021.github.io/slides/homework-2/index.pdf))
