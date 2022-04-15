@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<!-- saved from url=(0068)https://frontend-ifmo-2019.vercel.app/webdev/13-react-3/index.html#/ -->
+<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>State management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="../@lib/core.css">
+    <link rel="stylesheet" href="../@lib/theme.css">
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .reveal .object-fit-fill.slide-background[data-background-size=contain] video {
+            object-fit: fill !important;
+        }
+
+        .slide-flex {
+            display: flex !important;
+        }
+    </style>
+</head>
+<body class="white"><div class="reveal none has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="fade"><span class="slides" style="width: 960px; height: 700px; zoom: 1.06286;">
+    <section class="center title-slide present" style="top: 102px; display: block;">
+        <h1>Управление состоянием</h1>
+        <h2 class="fragment" data-fragment-index="0">State management</h2>
+        <br>
+    </section>
+
+    <section class="center title-slide future" hidden="" aria-hidden="true" style="top: 214.5px; display: block;">
+        <h1 class="title-count">State management: что это и зачем?</h1>
+    </section>
+
+    <section class="center future" hidden="" aria-hidden="true" style="top: 0px; display: block;">
+        <h2>Показательный пример</h2>
+        <img src="./images/form-example.png">
+    </section>
+
+    <section class="center little future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h2>С чем были проблемы?</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0">Приходилось постоянно держать кучу обработчиков на разные события, вовремя их добавлять и удалять</li>
+            <li class="fragment" data-fragment-index="1">Необходимо были всегда (или почти всегда) понимать, почему сработал тот или иной обработчик</li>
+            <li class="fragment" data-fragment-index="2">Обработчики делали что-то в нескольких несвязанных местах, терялся контроль над происходящим в приложении</li>
+        </ul>
+    </section>
+
+    <section class="center little future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h2>Определения</h2>
+        <ul>
+            <li><b style="font-weight: bolder; font-style: italic;">View</b> – часть приложения, отвечающая за отображение данных на странице</li>
+            <li><b style="font-weight: bolder; font-style: italic;">Состояние приложения (Application State)</b> – структурированные данные о конкретном экземпляре приложения для одного конкретного пользователя</li>
+        </ul>
+    </section>
+
+    <section class="center little future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h2>Двусторонняя связь</h2>
+        <img src="./images/ViewState-1.png" style="margin-left: 24px;">
+        <ul>
+            <li class="fragment" data-fragment-index="0">Некоторые изменения View вызывают изменения State. Например, ввод текста или выбор радиокнопки</li>
+            <li class="fragment" data-fragment-index="1">Изменения State вызывают перерисовки во View.</li>
+        </ul>
+    </section>
+
+    <section class="center little future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h2>React</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0">
+                Есть функция <code>setState</code>
+                <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">this</span>.setState(<span class="hljs-function">(<span class="hljs-params">state, props</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> { counter: state.counter + props.step };
+})</code></pre>
+            </li>
+            <li class="fragment" data-fragment-index="1">Любые изменения state принудительно вызывают <code>render()</code></li>
+        </ul>
+    </section>
+
+    <section class="center little future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h2>Двусторонняя связь</h2>
+        <img src="./images/ViewState-1.png" style="margin-left: 24px;">
+        <ul>
+            <li>Некоторые изменения View вызывают изменения State. Например, ввод текста или выбор радиокнопки</li>
+            <li>Изменения State вызывают перерисовки во View. <div class="fragment" data-fragment-index="0">Какие изменения?</div></li>
+        </ul>
+    </section>
+
+    <section class="center hor-center future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h2>Двусторонняя связь</h2>
+        <img src="./images/ViewState-2.png">
+    </section>
+
+    <section class="center hor-center future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h2>Двусторонняя связь</h2>
+        <img src="./images/ViewState-3.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>MVVM (Model-View-ViewModel)</h2>
+        <img src="./images/MVVM.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>В чем здесь проблема?</h2>
+        <img src="./images/MVVM-pre-problem.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Вопросы к MVVM:</h2>
+        <img src="./images/MVVM-problem.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Вопросы к MVVM:</h2>
+        <ul>
+            <li>Как контролировать внесение изменений в State? Откуда пришли данные в State? из View/из AJAX-запроса/из записи в storage</li>
+            <li class="fragment" data-fragment-index="0">Как вообще отлаживать изменение View после изменения State?</li>
+            <li class="fragment" data-fragment-index="1">Как убедиться в том, что после изменений State остался корректным?</li>
+        </ul>
+    </section>
+
+    <section class="center title-slide future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h1 class="title-count">Flux-архитектура</h1>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="img-header">Вот такая:</h2>
+        <img src="./images/flux-1.png" style="margin-top: -1px;">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="img-header">Вот такая:</h2>
+        <img src="./images/flux-1.1.png" style="margin-top: -1px;">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="img-header">На самом деле вот такая:</h2>
+        <img src="./images/flux-2.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="img-header">Actions</h2>
+        <figure>
+            <img src="./images/actions.png">
+            <figcaption class="fragment" style="position: absolute; top: 40px; right: 20px; width: 300px; font-size: 30px;" data-fragment-index="0">Действия, которые поступают в диспетчер с целью отработать в Store</figcaption>
+        </figure>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="img-header">Dispatcher</h2>
+        <figure>
+            <img src="./images/dispatcher.png">
+            <figcaption class="fragment" style="position: absolute; top: 40px; right: 20px; width: 300px; font-size: 30px;" data-fragment-index="0">Cущность, которая упорядочивает и сихронизирует проброс Actions в Store</figcaption>
+        </figure>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="img-header">Store</h2>
+        <figure>
+            <img src="./images/store.png">
+            <figcaption class="fragment" style="position: absolute; top: 40px; right: 20px; width: 320px; font-size: 28px;" data-fragment-index="0">Состояние приложения. Изменяется <i>строго на основе</i> старого состояния и данных из Action</figcaption>
+        </figure>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="img-header">View</h2>
+        <figure>
+            <img src="./images/view.png">
+            <figcaption class="fragment" style="position: absolute; top: 40px; right: 20px; width: 290px; font-size: 30px;" data-fragment-index="0">Конечная точка использования вашего Store</figcaption>
+        </figure>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="img-header">А в чем особенность?</h2>
+        <img src="./images/flux-sync.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="img-header">Модель взаимодействия синхронная!</h2>
+        <img src="./images/flux-breakpoint.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Вопросы к MVVM:</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0">Как контролировать внесение изменений в Store (откуда пришли данные в Store? из View/из AJAX-запроса/из записи в storage (нужное подчеркнуть))</li>
+            <div class="fragment red" data-fragment-index="1">actions!</div>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Вопросы к MVVM:</h2>
+        <ul>
+            <li style="text-decoration: line-through;">Как контролировать внесение изменений в Store (откуда пришли данные в Store? из View/из AJAX-запроса/из записи в storage (нужное подчеркнуть))</li>
+            <div class="red" style="text-decoration: line-through;">actions!</div>
+            <li class="fragment" data-fragment-index="0">Как вообще отлаживать изменение View после изменения Store?</li>
+            <div class="fragment red" data-fragment-index="1">dispatcher!</div>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Вопросы к MVVM:</h2>
+        <ul>
+            <li style="text-decoration: line-through;">Как контролировать внесение изменений в Store (откуда пришли данные в Store? из View/из AJAX-запроса/из записи в storage (нужное подчеркнуть))</li>
+            <div class="red" style="text-decoration: line-through;">actions!</div>
+            <li style="text-decoration: line-through;">Как вообще отлаживать изменение View после изменения Store?</li>
+            <div class="red" style="text-decoration: line-through;">dispatcher!</div>
+            <li class="fragment" data-fragment-index="0">Как убедиться в том, что после изменений Store остался корректным?</li>
+            <div class="fragment red" data-fragment-index="1">...</div>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Вопросы к Flux:</h2>
+        <ul>
+            <li style="text-decoration: line-through;">Как контролировать внесение изменений в Store (откуда пришли данные в Store? из View/из AJAX-запроса/из записи в storage (нужное подчеркнуть))</li>
+            <div style="text-decoration: line-through;" class="red">actions!</div>
+            <li style="text-decoration: line-through;">Как вообще отлаживать изменение View после изменения Store?</li>
+            <div style="text-decoration: line-through;" class="red">dispatcher!</div>
+            <li>Как убедиться в том, что после изменений Store остался корректным?</li>
+            <div class="red">...</div>
+        </ul>
+    </section>
+
+    <section class="center title-slide future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h1 class="title-count">Существующие решения</h1>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Cуществующие решения</h2>
+        <img src="./images/solutions.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Cуществующие решения</h2>
+        <img src="./images/solutions-redux.png">
+    </section>
+
+    <section class="hor-center center little future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <img src="./images/redux.png">
+        <div>Redux – библиотека для управления состоянием, основанная на flux.</div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Фичи Redux</h2>
+        <li>Один большой Store</li>
+        <img src="./images/redux-store.png">
+    </section>
+
+    <section class="center little future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h2>Ликбез: чистая функция</h2>
+        <ul>
+            <li>Чистая функция <b style="font-weight: bolder;">не обладает побочными эффектами</b>: не изменяет свои параметры или глобальные переменные</li>
+            <li>Чистая функция <b style="font-weight: bolder;">является детерминированной</b>: всегда возвращает одинаковые значения на одинаковых данных</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Фичи Redux</h2>
+        <li>Есть reducers</li>
+        <img src="./images/redux-reducers.png">
+        <li><i>reducer</i> является чистой функцией, которая возвращает новый store на основе старого и данных из action</li>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>reducers</h2>
+        <div style="font-size: 36px;">&nbsp;</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> notesReducer = (
+    state: ApplicationState,
+    action: IAction
+) =&gt; {
+    <span class="hljs-keyword">switch</span> (action.type) {
+        <span class="hljs-keyword">case</span> <span class="hljs-string">'INCREMENT_NOTE_COUNTER'</span>: {
+            <span class="hljs-keyword">const</span> { noteCount } = state;
+            <span class="hljs-keyword">const</span> { newNoteCount } = action;
+
+            <span class="hljs-keyword">return</span> {
+                ...state,
+                noteCount: noteCount + newNoteCount
+            };
+        }
+        ...</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>reducers</h2>
+        <div style="font-size: 36px;">Обычно выглядит, как длинный switch-case:</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span style="opacity: .3"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> notesReducer = (
+    state: ApplicationState,
+    action: IAction
+) =&gt; {
+    </span><span class="hljs-keyword">switch</span> (action.type) {
+        <span class="hljs-keyword">case</span> <span class="hljs-string">'INCREMENT_NOTE_COUNTER'</span>: {
+            <span style="opacity: .3"><span class="hljs-keyword">const</span> { noteCount } = state;
+            <span class="hljs-keyword">const</span> { newNoteCount } = action;
+
+            <span class="hljs-keyword">return</span> {
+                ...state,
+                noteCount: noteCount + newNoteCount
+            };</span>
+        }
+        ...</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>reducers</h2>
+        <div style="font-size: 36px;">Является чистой функцией:</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span style="opacity: .3"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> notesReducer = </span>(
+    state: ApplicationState,
+    action: IAction
+)<span style="opacity: .3"> =&gt; {
+    <span class="hljs-keyword">switch</span> (action.type) {
+        <span class="hljs-keyword">case</span> <span class="hljs-string">'INCREMENT_NOTE_COUNTER'</span>: {
+            <span class="hljs-keyword">const</span> { noteCount } = state;
+            <span class="hljs-keyword">const</span> { newNoteCount } = action;
+
+            </span><span class="hljs-keyword">return</span> {
+                ...state,
+                noteCount: noteCount + newNoteCount
+            };<span style="opacity: .3">
+        }
+        ...</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Вопросы к Flux:</h2>
+        <ul>
+            <li style="text-decoration: line-through;">Как контролировать внесение изменений в Store (откуда пришли данные в Store? из View/из AJAX-запроса/из записи в storage (нужное подчеркнуть))</li>
+            <div style="text-decoration: line-through;" class="red">actions!</div>
+            <li style="text-decoration: line-through;">Как вообще отлаживать изменение View после изменения Store?</li>
+            <div style="text-decoration: line-through;" class="red">dispatcher!</div>
+            <li>Как убедиться в том, что после изменений Store остался корректным?</li>
+            <div class="red fragment" data-fragment-index="0">reducer!</div>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Вопросы к Flux:</h2>
+        <ul>
+            <li style="text-decoration: line-through;">Как контролировать внесение изменений в Store (откуда пришли данные в Store? из View/из AJAX-запроса/из записи в storage (нужное подчеркнуть))</li>
+            <div style="text-decoration: line-through;" class="red">actions!</div>
+            <li style="text-decoration: line-through;">Как вообще отлаживать изменение View после изменения Store?</li>
+            <div style="text-decoration: line-through;" class="red">dispatcher!</div>
+            <li style="text-decoration: line-through;">Как убедиться в том, что после изменений Store остался корректным?</li>
+            <div style="text-decoration: line-through;" class="red">reducer!</div>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="font-size: 46px;">Некоторые моменты, которые полезно знать перед тем как начать разрабатываться с Redux:</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0">store и вся работа с ним кладется в отдельную папку (опционально)</li>
+            <li class="fragment" data-fragment-index="1">Библиотека <a href="https://www.npmjs.com/package/redux">redux</a> для работы со Store</li>
+            <li class="fragment" data-fragment-index="2">Библиотека <a href="https://www.npmjs.com/package/react-redux">react-redux</a> для использования в компонентах React</li>
+            <li class="fragment" data-fragment-index="3">Есть Redux DevTools, который отлично помогает при разработке</li>
+        </ul>
+    </section>
+
+    <section class="center title-slide future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h1 class="title-count">Связка React ↔ Redux</h1>
+    </section>
+
+    <section class="little center future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h2>Пример приложения</h2>
+        <div class="img-wrapper">
+            <img src="./images/redux-notes.png">
+        </div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Пример приложения</h2>
+        <img class="files-tree not-code-next" src="./images/tree-initial.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>actions</h2>
+        <img class="files-tree" src="./images/tree-actions.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>actions</h2>
+        <div class="img-wrapper">
+            <img src="./images/editNote-action.png">
+        </div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>actions</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">import</span> {
+    IAddNotePayload,
+    IEditNotePayload,
+    IChangeStatusPayload,
+    ACTIONS,
+    IAction
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> editNote = ({ id, newNote }: IEditNotePayload): <span class="hljs-function"><span class="hljs-params">IAction</span> =&gt;</span>
+    ({
+        <span class="hljs-keyword">type</span>: ACTIONS.EDIT_NOTE,
+        <span class="hljs-keyword">payload</span>: {
+            id,
+            newNote
+        }
+    });</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Каждый action – есть функция</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> {
+    IAddNotePayload,
+    IEditNotePayload,
+    IChangeStatusPayload,
+    ACTIONS,
+    IAction
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+
+</span><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> editNote = ({ id, newNote }: IEditNotePayload): <span class="hljs-function"><span class="hljs-params">IAction</span> =&gt;</span>
+    ({
+        <span class="hljs-keyword">type</span>: ACTIONS.EDIT_NOTE,
+        <span class="hljs-keyword">payload</span>: {
+            id,
+            newNote
+        }
+    });</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Принимает payload</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> {
+    IAddNotePayload,
+    </span>IEditNotePayload,<span style="opacity: .3">
+    IChangeStatusPayload,
+    ACTIONS,
+    IAction
+} </span><span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;<span style="opacity: .3">
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> editNote = </span>({ id, newNote }: IEditNotePayload)<span style="opacity: .3">: <span class="hljs-function"><span class="hljs-params">IAction</span> =&gt;</span>
+    ({
+        <span class="hljs-keyword">type</span>: ACTIONS.EDIT_NOTE,
+        <span class="hljs-keyword">payload</span>: {
+            id,
+            newNote
+        }
+    });</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>reducers</h2>
+        <img class="files-tree" src="./images/tree-reducers.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>reducers</h2>
+        <div class="img-wrapper">
+            <img src="./images/reducer.png">
+        </div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>reducers</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { ..., IEditNotePayload, IAction } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+...
+<span class="hljs-comment">// состояние Store при инициализации приложения</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> initialState = { notes: initialNotes };
+
+<span class="hljs-keyword">const</span> notesReducer = (
+    state: ApplicationState = initialState,
+    action: IAction
+) =&gt; {
+    ...
+    <span class="hljs-keyword">switch</span> (action.type) {
+        <span class="hljs-keyword">case</span> ACTIONS.EDIT_NOTE:
+        ...
+    }
+};</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>В аргументах приходит тот самый action</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { ..., IEditNotePayload, IAction } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+...
+<span style="opacity: .3"><span class="hljs-comment">// состояние Store при инициализации приложения</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> initialState = { notes: initialNotes };
+
+</span><span class="hljs-keyword">const</span> notesReducer = (
+    <span style="opacity: .3">state: ApplicationState = initialState,
+    </span>action: IAction
+) <span style="opacity: .3">=&gt; {
+    ...
+    <span class="hljs-keyword">switch</span> (action.type) {
+        <span class="hljs-keyword">case</span> ACTIONS.EDIT_NOTE:
+        ...
+    }
+};</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Действие определяется по типу action'а</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { ..., ACTIONS, IAction } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+...
+<span style="opacity: .3"><span class="hljs-comment">// состояние Store при инициализации приложения</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> initialState = { notes: initialNotes };
+
+<span class="hljs-keyword">const</span> notesReducer = </span>(<span style="opacity: .3">
+    state: ApplicationState = initialState,
+    </span>action: IAction
+) <span style="opacity: .3">=&gt; {
+    ...
+    <span class="hljs-keyword">switch</span> (</span>action.type<span style="opacity: .3">) {
+        </span><span class="hljs-keyword">case</span> ACTIONS.EDIT_NOTE<span style="opacity: .3">:
+        ...
+    }
+};</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Нужно задавать начальное состояние</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> { ..., IEditNotePayload, IAction } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+...
+<span class="hljs-comment">// состояние Store при инициализации приложения</span>
+</span><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> initialState = { notes: initialNotes };<span style="opacity: .3">
+
+<span class="hljs-keyword">const</span> notesReducer = (
+    </span>state: ApplicationState = initialState,<span style="opacity: .3">
+    action: IAction
+) =&gt; {
+    ...
+    <span class="hljs-keyword">switch</span> (action.type) {
+        <span class="hljs-keyword">case</span> ACTIONS.EDIT_NOTE:
+        ...
+    }
+};</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Один из case'ов подробнее:</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+...
+<span class="hljs-keyword">case</span> ACTIONS.EDIT_NOTE: {
+    <span class="hljs-keyword">const</span> { id, newNote } = action.payload;
+    <span class="hljs-keyword">const</span> noteWithId = { ...newNote, id };
+
+    <span class="hljs-keyword">const</span> noteIndex = state.notes.findIndex(
+        <span class="hljs-function">(<span class="hljs-params">note: INote</span>) =&gt;</span> note.id === id
+    );
+
+    <span class="hljs-keyword">return</span> {
+        ...state,
+        notes: [...state.notes].splice(noteIndex, <span class="hljs-number">1</span>, noteWithId);
+    };
+}
+...</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>reducer возвращает новый Store:</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+<span style="opacity: .3">...
+<span class="hljs-keyword">case</span> ACTIONS.EDIT_NOTE: {
+    <span class="hljs-keyword">const</span> { id, newNote } = action.payload;
+    <span class="hljs-keyword">const</span> noteWithId = { ...newNote, id };
+
+    <span class="hljs-keyword">const</span> noteIndex = </span>state.notes<span style="opacity: .3">.findIndex(
+        <span class="hljs-function">(<span class="hljs-params">note: INote</span>) =&gt;</span> note.id === id
+    );
+
+    </span><span class="hljs-keyword">return</span> {
+        ...state,
+        notes: [...state.notes].splice(noteIndex, <span class="hljs-number">1</span>, noteWithId);
+    };<span style="opacity: .3">
+}
+...</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Инициализация Store</h2>
+        <img class="files-tree" src="./images/tree-store.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Инициализация Store</h2>
+        <div class="img-wrapper">
+            <img src="./images/store(1).png">
+        </div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Инициализация Store</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/index.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+
+<span class="hljs-keyword">import</span> { INote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+<span class="hljs-keyword">import</span> reducer, { initialState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./reducers'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> ApplicationState {
+    notes: INote[];
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createStore(
+    reducer,
+    initialState <span class="hljs-keyword">as</span> <span class="hljs-built_in">any</span>
+);</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Передаем reducers</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/index.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+<span style="opacity: .3">
+<span class="hljs-keyword">import</span> { INote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+<span class="hljs-keyword">import</span> </span>reducer<span style="opacity: .3">, { initialState } </span><span class="hljs-keyword">from</span> <span class="hljs-string">'./reducers'</span>;
+
+<span style="opacity: .3"><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> ApplicationState {
+    notes: INote[];
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> </span>createStore(
+    reducer,
+    <span style="opacity: .3">initialState <span class="hljs-keyword">as</span> <span class="hljs-built_in">any</span>
+</span>);</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Значение Store по умолчанию</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/index.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+<span style="opacity: .3">
+<span class="hljs-keyword">import</span> { INote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+<span class="hljs-keyword">import</span> reducer, </span>{ initialState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./reducers'</span>;
+
+<span style="opacity: .3"><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> ApplicationState {
+    notes: INote[];
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> </span>createStore(
+    <span style="opacity: .3">reducer,
+    </span>initialState <span class="hljs-keyword">as</span> <span class="hljs-built_in">any</span>
+);</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Как подключить к React?</h2>
+        <img class="files-tree" src="./images/tree-app.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Как подключить к React?</h2>
+        <div class="img-wrapper">
+            <img src="./images/app.png">
+        </div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Как подключить к React?</h2>
+        <div style="font-size: 36px;" class="directory">/src/App.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Provider } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>;
+<span class="hljs-keyword">import</span> { Route, Switch } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router-dom'</span>;
+<span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">'./store'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> App <span class="hljs-keyword">extends</span> Component {
+    <span class="hljs-keyword">public</span> render() {
+        <span class="hljs-keyword">return</span> (
+            &lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>={store}&gt;
+                &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"App"</span>&gt;
+                    &lt;<span class="hljs-name">Switch</span>&gt;
+                        &lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path=<span class="hljs-string">"/note/:id"</span></span> <span class="hljs-attr">component</span>={Note} /&gt;
+                        &lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path=<span class="hljs-string">"/"</span></span> <span class="hljs-attr">component</span>={NotesList} /&gt;
+                    &lt;<span class="hljs-name"><span class="hljs-regexp">/Switch</span></span><span class="hljs-regexp">&gt;
+                &lt;</span><span class="hljs-name"><span class="hljs-regexp">/</span>div</span>&gt;
+            &lt;<span class="hljs-name"><span class="hljs-regexp">/Provider</span></span><span class="hljs-regexp">&gt;
+        );
+    }
+}</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Ликбез: react-router</h2>
+        <div style="font-size: 36px;" class="directory">/src/App.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { Provider } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>;
+</span><span class="hljs-keyword">import</span> { Route, Switch } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router-dom'</span>;
+<span style="opacity: .3"><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">'./store'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> App <span class="hljs-keyword">extends</span> Component {
+    <span class="hljs-keyword">public</span> render() {
+        <span class="hljs-keyword">return</span> (
+            &lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>={store}&gt;
+                &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"App"</span>&gt;
+                    </span>&lt;<span class="hljs-name">Switch</span>&gt;
+                        &lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path=<span class="hljs-string">"/note/:id"</span></span> <span class="hljs-attr">component</span>={Note} /&gt;
+                        &lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path=<span class="hljs-string">"/"</span></span> <span class="hljs-attr">component</span>={NotesList} /&gt;
+                    &lt;<span class="hljs-name"><span class="hljs-regexp">/Switch</span></span><span class="hljs-regexp">&gt;
+                </span><span style="opacity: .3"><span class="hljs-regexp">&lt;</span><span class="hljs-name"><span class="hljs-regexp">/</span>div</span>&gt;
+            &lt;<span class="hljs-name"><span class="hljs-regexp">/Provider</span></span><span class="hljs-regexp">&gt;
+        );
+    }
+}</span></span></code></pre>
+        <div class="post-mark fragment" style="bottom: 45%;" data-fragment-index="0">На самом деле обычные роуты, на которые будет реагировать React</div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Вернемся к redux</h2>
+        <div style="font-size: 36px;" class="directory">/src/App.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+</span><span class="hljs-keyword">import</span> { Provider } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>;<span style="opacity: .3">
+<span class="hljs-keyword">import</span> { Route, Switch } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-router-dom'</span>;
+</span><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">'./store'</span>;<span style="opacity: .3">
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> App <span class="hljs-keyword">extends</span> Component {
+    <span class="hljs-keyword">public</span> render() {
+        <span class="hljs-keyword">return</span> (
+            </span>&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>={store}&gt;
+                <span style="opacity: .3">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"App"</span>&gt;
+                    &lt;<span class="hljs-name">Switch</span>&gt;
+                        &lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path=<span class="hljs-string">"/note/:id"</span></span> <span class="hljs-attr">component</span>={Note} /&gt;
+                        &lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path=<span class="hljs-string">"/"</span></span> <span class="hljs-attr">component</span>={NotesList} /&gt;
+                    &lt;<span class="hljs-name"><span class="hljs-regexp">/Switch</span></span><span class="hljs-regexp">&gt;
+                &lt;</span><span class="hljs-name"><span class="hljs-regexp">/</span>div</span>&gt;
+            </span>&lt;<span class="hljs-name"><span class="hljs-regexp">/Provider</span></span><span class="hljs-regexp">&gt;
+        </span><span style="opacity: .3"><span class="hljs-regexp">);
+    }
+}</span></span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Работаем с redux в компонентах</h2>
+        <img class="files-tree" src="./images/tree-note.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Работаем с redux в компонентах</h2>
+        <div class="img-wrapper">
+            <img src="./images/note.png">
+        </div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Работаем с redux в компонентах</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span class="hljs-keyword">import</span> { connect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>;
+<span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store'</span>;
+<span class="hljs-keyword">import</span> { changeStatus, editNote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store/actions'</span>;
+...
+
+<span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;;
+<span class="hljs-keyword">type</span> DispatchProps = { dispatch: <span class="hljs-function">(<span class="hljs-params">action: IAction</span>) =&gt;</span> <span class="hljs-built_in">void</span> };
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps &amp; ...;
+
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+}
+
+<span class="hljs-keyword">const</span> mapStateToProps = <span class="hljs-function">(<span class="hljs-params">state: ApplicationState, props: OwnProps</span>) =&gt;</span> ({
+    currentNote: state.notes.find(<span class="hljs-function"><span class="hljs-params">note</span> =&gt;</span> note.id === props.id);
+});
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(mapStateToProps)(Note);</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>connect()()</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span class="hljs-keyword">import</span> { connect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>;
+<span style="opacity: .3"><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store'</span>;
+<span class="hljs-keyword">import</span> { changeStatus, editNote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store/actions'</span>;
+...
+
+<span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;;
+<span class="hljs-keyword">type</span> DispatchProps = { dispatch: <span class="hljs-function">(<span class="hljs-params">action: IAction</span>) =&gt;</span> <span class="hljs-built_in">void</span> };
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps &amp; ...;
+
+</span><span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+}<span style="opacity: .3">
+
+<span class="hljs-keyword">const</span> mapStateToProps = <span class="hljs-function">(<span class="hljs-params">state: ApplicationState, props: OwnProps</span>) =&gt;</span> ({
+    currentNote: state.notes.find(<span class="hljs-function"><span class="hljs-params">note</span> =&gt;</span> note.id === props.id);
+});
+
+</span><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(mapStateToProps)(Note);</code></pre>
+        <div class="post-mark fragment" style="bottom: 40%;" data-fragment-index="0">connect(...)(Note) возвращает новый компонент, который имеет доступ в Store</div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>mapStateToProps</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> { connect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-redux'</span>;
+</span><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store'</span>;<span style="opacity: .3">
+<span class="hljs-keyword">import</span> { changeStatus, editNote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store/actions'</span>;
+...
+
+</span><span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;;
+<span style="opacity: .3"><span class="hljs-keyword">type</span> DispatchProps = { dispatch: <span class="hljs-function">(<span class="hljs-params">action: IAction</span>) =&gt;</span> <span class="hljs-built_in">void</span> };
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps &amp; ...;
+
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+}
+
+</span><span class="hljs-keyword">const</span> mapStateToProps = <span class="hljs-function">(<span class="hljs-params">state: ApplicationState, props: OwnProps</span>) =&gt;</span> ({
+    currentNote: state.notes.find(<span class="hljs-function"><span class="hljs-params">note</span> =&gt;</span> note.id === props.id);
+});<span style="opacity: .3">
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(</span>mapStateToProps<span style="opacity: .3">)(Note);</span></code></pre>
+        <div class="post-mark fragment" style="bottom: 40%;" data-fragment-index="0">mapStateToProps передается первым аргументом в connect(...) и подкладывает в this.props поля из Store</div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Как получить доступ к Store?</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;">...
+<span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;;
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps;
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+    <span class="hljs-keyword">public</span> render() {
+        <span class="hljs-keyword">return</span> (
+            ...
+            &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"note-page__field"</span>&gt;
+                Дата создания
+                &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"note-page__created-date"</span>&gt;
+                    {<span class="hljs-keyword">this</span>.props.currentNote.created}
+                &lt;<span class="hljs-regexp">/</span><span class="hljs-name"><span class="hljs-regexp">div</span></span><span class="hljs-regexp">&gt;
+            &lt;/</span><span class="hljs-name">div</span>&gt;
+            ...
+        )
+    }
+    ...
+}</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Данные будут подложены в this.props</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span style="opacity: .3">...
+</span><span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;;
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps;
+<span style="opacity: .3"><span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+    <span class="hljs-keyword">public</span> render() {
+        <span class="hljs-keyword">return</span> (
+            ...
+            &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"note-page__field"</span>&gt;
+                Дата создания
+                &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"note-page__created-date"</span>&gt;
+                    </span>{<span class="hljs-keyword">this</span>.props.currentNote.created}
+                <span style="opacity: .3">&lt;<span class="hljs-regexp">/</span><span class="hljs-name"><span class="hljs-regexp">div</span></span><span class="hljs-regexp">&gt;
+            &lt;/</span><span class="hljs-name">div</span>&gt;
+            ...
+        )
+    }
+    ...
+}
+...</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Как вызвать событие?</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;">...
+<span class="hljs-keyword">type</span> DispatchProps = { dispatch: <span class="hljs-function">(<span class="hljs-params">action: IAction</span>) =&gt;</span> <span class="hljs-built_in">void</span> };
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps;
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+    <span class="hljs-keyword">public</span> onEditButtonClick = <span class="hljs-function">(<span class="hljs-params">e: ReactMouseEvent</span>) =&gt;</span> {
+        ...
+        <span class="hljs-comment">// Кладем в currentNote данные об отредактированной заметке</span>
+        <span class="hljs-keyword">const</span> currentNote = ...;
+
+        <span class="hljs-keyword">this</span>.props.dispatch({
+            <span class="hljs-keyword">type</span>: ACTIONS.EDIT_NOTE,
+            payload: { <span class="hljs-keyword">id</span>, <span class="hljs-keyword">newNote</span>: currentNote }
+        });
+    };
+    ...
+}
+...</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Генерируем action прямо в dispatch</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span style="opacity: .3">...
+</span><span class="hljs-keyword">type</span> DispatchProps = { dispatch: <span class="hljs-function">(<span class="hljs-params">action: IAction</span>) =&gt;</span> <span class="hljs-built_in">void</span> };
+<span style="opacity: .3"><span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps;
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+    <span class="hljs-keyword">public</span> onEditButtonClick = <span class="hljs-function">(<span class="hljs-params">e: ReactMouseEvent</span>) =&gt;</span> {
+        ...
+        <span class="hljs-comment">// Кладем в currentNote данные об отредактированной заметке</span>
+        <span class="hljs-keyword">const</span> currentNote = ...;
+
+        </span><span class="hljs-keyword">this</span>.props.dispatch({
+            <span class="hljs-keyword">type</span>: ACTIONS.EDIT_NOTE,
+            payload: { <span class="hljs-keyword">id</span>, <span class="hljs-keyword">newNote</span>: currentNote }
+        });<span style="opacity: .3">
+    };
+    ...
+}
+...</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Используем actionCreators</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">import</span> { editNote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store/actions'</span>;
+...
+<span class="hljs-keyword">type</span> DispatchProps = { dispatch: <span class="hljs-function">(<span class="hljs-params">action: IAction</span>) =&gt;</span> <span class="hljs-built_in">void</span> };
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps;
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+    <span class="hljs-keyword">public</span> onEditButtonClick = <span class="hljs-function">(<span class="hljs-params">e: ReactMouseEvent</span>) =&gt;</span> {
+        ...
+        <span class="hljs-comment">// Кладем в currentNote данные об отредактированной заметке</span>
+        <span class="hljs-keyword">const</span> currentNote = ...;
+
+        <span class="hljs-keyword">this</span>.props.dispatch(editNote({ <span class="hljs-keyword">id</span>, <span class="hljs-keyword">newNote</span>: currentNote }));
+    };
+    ...
+}
+...</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Используем actionCreators</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">import</span> { editNote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store/actions'</span>;
+<span style="opacity: .3">...
+</span><span class="hljs-keyword">type</span> DispatchProps = { dispatch: <span class="hljs-function">(<span class="hljs-params">action: IAction</span>) =&gt;</span> <span class="hljs-built_in">void</span> };
+<span style="opacity: .3"><span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps;
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+    <span class="hljs-keyword">public</span> onEditButtonClick = <span class="hljs-function">(<span class="hljs-params">e: ReactMouseEvent</span>) =&gt;</span> {
+        ...
+        <span class="hljs-comment">// Кладем в currentNote данные об отредактированной заметке</span>
+        <span class="hljs-keyword">const</span> currentNote = ...;
+
+        </span><span class="hljs-keyword">this</span>.props.dispatch(editNote({ <span class="hljs-keyword">id</span>, <span class="hljs-keyword">newNote</span>: currentNote }));<span style="opacity: .3">
+    };
+    ...
+}
+...</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Dispatch'им событие из компонента</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">import</span> { editNote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store/actions'</span>;
+<span style="opacity: .3">...
+</span><span class="hljs-keyword">type</span> DispatchProps = { dispatch: <span class="hljs-function">(<span class="hljs-params">action: IAction</span>) =&gt;</span> <span class="hljs-built_in">void</span> };
+<span style="opacity: .3"><span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps;
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+    <span class="hljs-keyword">public</span> onEditButtonClick = <span class="hljs-function">(<span class="hljs-params">e: ReactMouseEvent</span>) =&gt;</span> {
+        ...
+        <span class="hljs-comment">// Кладем в currentNote данные об отредактированной заметке</span>
+        <span class="hljs-keyword">const</span> currentNote = ...;
+
+        </span><span class="hljs-keyword">this</span>.props.dispatch(editNote({ <span class="hljs-keyword">id: <span style="color: green;">[<span class="hljs-number">56</span>]</span></span>, <span class="hljs-keyword">newNote</span>: <span style="color: green;">[ЗАМЕТКА]</span> }))<span style="opacity: .3">
+    };
+    ...
+}
+...</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="font-size: 40px;">actionCreator возвращает данные с типом action'а</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> {
+    IAddNotePayload,
+    IEditNotePayload,
+    IChangeStatusPayload,
+    ACTIONS,
+    IAction
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+
+</span><span class="hljs-keyword">const</span> editNote = <span class="hljs-function">(<span class="hljs-params">{ id: </span></span><span style="color: green;"><span class="hljs-function"><span class="hljs-params">[56]</span></span></span><span class="hljs-function"><span class="hljs-params">, newNote: </span></span><span style="color: green;"><span class="hljs-function"><span class="hljs-params">[ЗАМЕТКА]</span></span></span><span class="hljs-function"><span class="hljs-params"> }: IEditNotePayload</span>) =&gt;</span>
+    ({
+        <span class="hljs-keyword">type</span>: ACTIONS.EDIT_NOTE <span class="hljs-comment">// </span><span style="color: green;"><span class="hljs-comment">'EDIT_NOTE'</span></span><span class="hljs-comment">,</span>
+        <span class="hljs-keyword">payload</span>: {
+            id: <span style="color: green;">[<span class="hljs-number">56</span>]</span>,
+            newNote: <span style="color: green;">[ЗАМЕТКА]</span>
+        }
+    });
+    ...</code></pre>
+    </section>
+
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Принимаем данные в reducer'е:</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+...
+<span class="hljs-keyword">case</span> ACTIONS.EDIT_NOTE: { <span class="hljs-comment">// 'editNote'</span>
+    <span class="hljs-keyword">const</span> { id: <span style="color: green;">[<span class="hljs-number">56</span>]</span>, newNote: <span style="color: green;">[ЗАМЕТКА]</span> } = action.payload;
+
+    <span class="hljs-comment">// noteWithId – это [ЗАМЕТКА №56]</span>
+    <span class="hljs-keyword">const</span> noteWithId = { ...newNote <span style="color: green;">[ЗАМЕТКА]</span>, id <span style="color: green;">[<span class="hljs-number">56</span>]</span> };
+
+    <span class="hljs-comment">// находим идентификатор редактируемой заметки</span>
+    <span class="hljs-keyword">const</span> index = state.notes.findIndex(<span class="hljs-function">(<span class="hljs-params">note: INote</span>) =&gt;</span> note.id === id);
+
+    <span class="hljs-comment">// копируем массив заметок и вставляем на место старой новую</span>
+    <span class="hljs-keyword">return</span> {
+        ...state,
+        notes: [...state.notes].splice(index, <span class="hljs-number">1</span>, noteWithId: <span style="color: green;">[ЗАМЕТКА №<span class="hljs-number">56</span>]</span>);
+    };
+}
+...</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Кладем Store в компонент</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span style="opacity: .3">...
+
+</span><span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;;
+<span style="opacity: .3"><span class="hljs-keyword">type</span> DispatchProps = { dispatch: <span class="hljs-function">(<span class="hljs-params">action: IAction</span>) =&gt;</span> <span class="hljs-built_in">void</span> };
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps &amp; ...;
+
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+}
+
+</span><span class="hljs-keyword">const</span> mapStateToProps = <span class="hljs-function">(<span class="hljs-params">state: ApplicationState, props: OwnProps</span>) =&gt;</span> ({
+    currentNote: state.notes.find(<span class="hljs-function"><span class="hljs-params">note</span> =&gt;</span> note.id === id: <span style="color: green;">[<span class="hljs-number">56</span>]</span>);
+    <span class="hljs-comment">// теперь this.props.currentNote – это </span><span style="color: green;"><span class="hljs-comment">[ЗАМЕТКА №56]</span></span>
+});<span style="opacity: .3">
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(</span>mapStateToProps<span style="opacity: .3">)(Note);</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Получаем Store из this.props</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;">...
+<span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;;
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps; <span class="hljs-comment">// подкладываем StateProps в this.props</span>
+<span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+    <span class="hljs-keyword">public</span> render() {
+        <span class="hljs-keyword">return</span> (
+            ...
+            &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"note-page__field"</span>&gt;
+                Дата создания
+                &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"note-page__created-date"</span>&gt;
+                    {<span class="hljs-keyword">this</span>.props.currentNote.created} <span class="hljs-comment">// это </span><span style="color: green;"><span class="hljs-comment">[ЗАМЕТКА №56]</span></span>
+                &lt;<span class="hljs-regexp">/</span><span class="hljs-name"><span class="hljs-regexp">div</span></span><span class="hljs-regexp">&gt;
+            &lt;/</span><span class="hljs-name">div</span>&gt;
+            ...
+        )
+    }
+    ...
+}</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Получаем Store из this.props</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/note/note.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;">...
+<span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;;
+<span class="hljs-keyword">type</span> Props = StateProps &amp; DispatchProps; <span class="hljs-comment">// подкладываем StateProps в this.props</span>
+<span style="opacity: .3"><span class="hljs-keyword">class</span> Note <span class="hljs-keyword">extends</span> Component&lt;<span class="hljs-name">Props, IOwnState</span>&gt; {
+    ...
+    <span class="hljs-keyword">public</span> render() {
+        <span class="hljs-keyword">return</span> (
+            ...
+            &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"note-page__field"</span>&gt;
+                Дата создания
+                &lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"note-page__created-date"</span>&gt;
+                    </span>{<span class="hljs-keyword">this</span>.props.currentNote.created} <span class="hljs-comment">// это </span><span style="color: green;"><span class="hljs-comment">[ЗАМЕТКА №56]</span></span><span style="opacity: .3">
+                &lt;<span class="hljs-regexp">/</span><span class="hljs-name"><span class="hljs-regexp">div</span></span><span class="hljs-regexp">&gt;
+            &lt;/</span><span class="hljs-name">div</span>&gt;
+            ...
+        )
+    }
+    ...
+}</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Redux DevTools</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0"><a href="https://github.com/zalmoxisus/redux-devtools-extension">Ссылка на документацию и мануал по установке</a></li>
+            <li class="fragment" data-fragment-index="1">Позволяет следить за Store в режиме дебага</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Redux DevTools</h2>
+        <li>Запуск</li>
+        <img src="./images/redux-devtools-launch.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Redux DevTools</h2>
+        <li>Отображается вся история action'ов для экземпляра приложения</li>
+        <img src="./images/redux-devtools-history.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Redux DevTools</h2>
+        <li>Для каждого action'а (или даже нескольких) можно посмотреть параметры action'а, состояние store после выполнения и diff стора</li>
+        <img src="./images/redux-devtools-action-select.png" width="94%">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Redux DevTools</h2>
+        <img src="./images/redux-devtools-action.png" width="93%">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Redux DevTools</h2>
+        <img src="./images/redux-devtools-state.png" width="93%">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Redux DevTools</h2>
+        <img src="./images/redux-devtools-diff.png" width="93%">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h1>Идеальная библиотека?</h1>
+        <ol>
+            <div class="fragment" data-fragment-index="0">Да, но:</div><br>
+            <li class="fragment" data-fragment-index="1">В Store теперь хочется складывать вообще все</li>
+            <li class="fragment" data-fragment-index="2">В redux'е store не знает о том, какие его части нужны для каждой конкретной view и пересчитывает все в функциях, которые пробрасывают store (mapStateToProps)</li>
+            <li class="fragment" data-fragment-index="3">Нет асинхронности:(</li>
+            <li class="fragment" data-fragment-index="4">Слишком много писать</li>
+        </ol>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Проблема 1. Что делать, если Store стал одной большой помойкой</h2>
+    </section>
+
+    <section hidden="" aria-hidden="true" class="future" style="display: none;">
+        <h2>Куда класть данные и когда использовать Application State?</h2>
+        <div class="fragment" data-fragment-index="0">Данные могут относиться к <span class="red">3 категориям</span>:</div>
+        <ul>
+            <li class="fragment" data-fragment-index="1">Данные, которые могут поменяться из нескольких мест</li>
+            <li class="fragment" data-fragment-index="2">Данные, которые нужны в нескольких несвязанных частях приложения (компонентах)</li>
+            <li class="fragment" data-fragment-index="3">Начальные данные для приложения</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Данные, которые могут поменяться из нескольких мест</h2>
+        <img src="./images/appstate-case-1.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Данные, которые нужны в нескольких несвязанных частях приложения (компонентах)</h2>
+        <img src="./images/appstate-case-2.1.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Данные, которые нужны в нескольких несвязанных частях приложения (компонентах)</h2>
+        <img src="./images/appstate-case-2.2.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Начальные данные для приложения</h2>
+        <div class="fragment" style="font-size: 36px;" data-fragment-index="0"><i>Речь о данных, которые пришли с сервера: переводы, какие-то настройки, и т.д.</i></div>
+        <ul>
+            <li class="fragment" data-fragment-index="1">Хорошо бы, чтобы эти данные хранились в одном месте...</li>
+            <li class="fragment" data-fragment-index="2">И чтобы достать их можно было из любого компонента...</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Проблема 2. Как избежать rerender'а во всех местах?</h2>
+        <ul><br>
+            <div class="fragment" data-fragment-index="0">Хорошо бы, чтобы пересчитывались данные только для тех View, данные для которых реально поменялись...</div><br>
+            <div class="fragment" data-fragment-index="1"><a href="https://redux.js.org/recipes/computing-derived-data">Библиотека Reselect!</a></div><br>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Чтобы было сложнее, добавим новую фичу</h2>
+        <img class="files-tree" src="./images/tree-last-status.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Чтобы было сложнее, добавим новую фичу</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/last-status/index.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span class="hljs-keyword">import</span> { getLastStatus } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store/selectors'</span>;
+...
+<span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;
+
+<span class="hljs-keyword">const</span> LastStatus = <span class="hljs-function">(<span class="hljs-params">{ lastStatus }: StateProps</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> (
+        &lt;<span class="hljs-name">h2</span>&gt;Cтатус последней заметки: {lastStatus.toString()}&lt;<span class="hljs-name">h2</span>&gt;
+    )
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mapStateToProps</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">return</span> {
+        lastStatus: getLastStatus(state)
+    };
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(mapStateToProps)(LastStatus);</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Чтобы было сложнее, добавим новую фичу</h2>
+        <div style="font-size: 36px;" class="directory">/src/components/last-status/index.tsx</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span class="hljs-keyword">import</span> { getLastStatus } <span class="hljs-keyword">from</span> <span class="hljs-string">'../../store/selectors'</span>;
+<span style="opacity: .3">...
+<span class="hljs-keyword">type</span> StateProps = ReturnType&lt;<span class="hljs-name"><span class="hljs-keyword">typeof</span> mapStateToProps</span>&gt;
+
+<span class="hljs-keyword">const</span> LastStatus = </span><span class="hljs-function">(<span class="hljs-params">{ lastStatus }: StateProps</span>)</span><span style="opacity: .3"><span class="hljs-function"> =&gt;</span> {
+    <span class="hljs-keyword">return</span> (
+        </span>&lt;<span class="hljs-name">h2</span>&gt;Cтатус последней заметки: {lastStatus.toString()}&lt;<span class="hljs-name">h2</span>&gt;
+    <span style="opacity: .3">)
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mapStateToProps</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">return</span> {
+        </span>lastStatus: getLastStatus(state)<span style="opacity: .3">
+    };
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> connect(mapStateToProps)(LastStatus);</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Про селекторы</h2>
+        <img class="files-tree" src="./images/tree-selectors.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Про селекторы</h2>
+        <div class="img-wrapper">
+            <img src="./images/selectors.png">
+        </div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Как выглядят селекторы?</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/selectors.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getNoteById</span>(<span class="hljs-params">state: ApplicationState, id: <span class="hljs-built_in">string</span></span>) </span>{
+    <span class="hljs-keyword">const</span> { notes } = state;
+
+    <span class="hljs-keyword">return</span> notes.find(<span class="hljs-function"><span class="hljs-params">note</span> =&gt;</span> note.id === <span class="hljs-built_in">parseInt</span>(id, <span class="hljs-number">10</span>)) ||
+        notes[notes.length - <span class="hljs-number">1</span>];
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAllNotes</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">return</span> state.notes;
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLastStatus</span>(<span class="hljs-params">{ notes }: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">return</span> notes[notes.length - <span class="hljs-number">1</span>].status;
+}</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Селектор может быть простой</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/selectors.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getNoteById</span>(<span class="hljs-params">state: ApplicationState, id: <span class="hljs-built_in">string</span></span>) </span>{
+    <span class="hljs-keyword">const</span> { notes } = state;
+
+    <span class="hljs-keyword">return</span> notes.find(<span class="hljs-function"><span class="hljs-params">note</span> =&gt;</span> note.id === <span class="hljs-built_in">parseInt</span>(id, <span class="hljs-number">10</span>)) ||
+        notes[notes.length - <span class="hljs-number">1</span>];
+}
+
+</span><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAllNotes</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">return</span> state.notes;
+}<span style="opacity: .3">
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLastStatus</span>(<span class="hljs-params">{ notes }: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">return</span> notes[notes.length - <span class="hljs-number">1</span>].status;
+}</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Может содержать логику</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/selectors.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+
+</span><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getNoteById</span>(<span class="hljs-params">state: ApplicationState, id: <span class="hljs-built_in">string</span></span>) </span>{
+    <span class="hljs-keyword">const</span> { notes } = state;
+
+    <span class="hljs-keyword">return</span> notes.find(<span class="hljs-function"><span class="hljs-params">note</span> =&gt;</span> note.id === <span class="hljs-built_in">parseInt</span>(id, <span class="hljs-number">10</span>)) ||
+        notes[notes.length - <span class="hljs-number">1</span>];
+}<span style="opacity: .3">
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAllNotes</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">return</span> state.notes;
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLastStatus</span>(<span class="hljs-params">{ notes }: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">return</span> notes[notes.length - <span class="hljs-number">1</span>].status;
+}</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Селекторы можно комбинировать</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/selectors.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> </span></span><span class="hljs-function"><span class="hljs-title">getNoteById</span>(<span class="hljs-params">state: ApplicationState, id: <span class="hljs-built_in">string</span></span>)</span><span style="opacity: .3"><span class="hljs-function"> </span>{
+    </span><span class="hljs-keyword">const</span> notes = getAllNotes(state);<span style="opacity: .3">
+
+    <span class="hljs-keyword">return</span> notes.find(<span class="hljs-function"><span class="hljs-params">note</span> =&gt;</span> note.id === <span class="hljs-built_in">parseInt</span>(id, <span class="hljs-number">10</span>)) ||
+        notes[notes.length - <span class="hljs-number">1</span>];
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> </span></span><span class="hljs-function"><span class="hljs-title">getAllNotes</span>(<span class="hljs-params">state: ApplicationState</span>)</span><span style="opacity: .3"><span class="hljs-function"> </span>{
+    <span class="hljs-keyword">return</span> state.notes;
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLastStatus</span>(<span class="hljs-params">{ notes }: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">return</span> notes[notes.length - <span class="hljs-number">1</span>].status;
+}</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Оптимизируем селекторы</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/selectors.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">import</span> { createSelector } <span class="hljs-keyword">from</span> <span class="hljs-string">'reselect'</span>
+<span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+...
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLastNote</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">const</span> { notes } = state;
+
+    <span class="hljs-keyword">return</span> notes[notes.length - <span class="hljs-number">1</span>]
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getLastStatus = createSelector(
+    [getLastNote],
+    <span class="hljs-function">(<span class="hljs-params">lastNote: INote</span>) =&gt;</span> {
+        <span class="hljs-keyword">return</span> lastNote.status;
+    }
+)</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Оптимизируем селекторы</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/selectors.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">import</span> { createSelector } <span class="hljs-keyword">from</span> <span class="hljs-string">'reselect'</span>
+<span style="opacity: .3"><span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+...
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLastNote</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">const</span> { notes } = state;
+
+    <span class="hljs-keyword">return</span> notes[notes.length - <span class="hljs-number">1</span>]
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getLastStatus = </span>createSelector(
+    [getLastNote],
+    <span class="hljs-function">(<span class="hljs-params">lastNote: INote</span>) =&gt;</span> {
+        <span class="hljs-keyword">return</span> lastNote.status;
+    }
+)</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Оптимизируем селекторы</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/selectors.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> { createSelector } <span class="hljs-keyword">from</span> <span class="hljs-string">'reselect'</span>
+<span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+...
+</span><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLastNote</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">const</span> { notes } = state;
+
+    <span class="hljs-keyword">return</span> notes[notes.length - <span class="hljs-number">1</span>]
+}<span style="opacity: .3">
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getLastStatus = createSelector(
+    </span>[getLastNote],<span style="opacity: .3">
+    <span class="hljs-function">(<span class="hljs-params">lastNote: INote</span>) =&gt;</span> {
+        <span class="hljs-keyword">return</span> lastNote.status;
+    }
+)</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Оптимизируем селекторы</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/selectors.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> { createSelector } <span class="hljs-keyword">from</span> <span class="hljs-string">'reselect'</span>
+<span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+...
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLastNote</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">const</span> { notes } = state;
+
+    <span class="hljs-keyword">return</span> notes[notes.length - <span class="hljs-number">1</span>]
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getLastStatus = createSelector(
+    [getLastNote],
+    </span><span class="hljs-function">(<span class="hljs-params">lastNote: INote</span>) =&gt;</span> {
+        <span class="hljs-keyword">return</span> lastNote.status;
+    }<span style="opacity: .3">
+)</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Оптимизируем селекторы</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/selectors.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">import</span> { createSelector } <span class="hljs-keyword">from</span> <span class="hljs-string">'reselect'</span>
+<span class="hljs-keyword">import</span> { ApplicationState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./index'</span>;
+...
+<span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getLastNote</span>(<span class="hljs-params">state: ApplicationState</span>) </span>{
+    <span class="hljs-keyword">const</span> { notes } = state;
+
+    <span class="hljs-keyword">return</span> notes[notes.length - <span class="hljs-number">1</span>]
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getLastStatus = createSelector(
+    [getLastNote],
+    <span class="hljs-function">(<span class="hljs-params">lastNote: INote</span>) =&gt;</span> {
+        <span class="hljs-keyword">return</span> lastNote.status;
+    }
+)</code></pre>
+        <div class="post-mark fragment" style="bottom: 30%;" data-fragment-index="0">Нужный селектор пересчитается только тогда, когда изменятся данные, которые приходят из зависимых селекторов</div>
+    </section>
+
+    <section class="very-small future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="font-size: 1.3em;">Reselect: итоги</h2>
+        <div class="fragment little-title" data-fragment-index="0">Зачем:</div>
+        <ul>
+            <li class="fragment" data-fragment-index="1">"If the state tree is large, or the calculation expensive, repeating the calculation on every update may cause performance problems. Reselect can help to avoid these unnecessary recalculations."</li>
+        </ul>
+        <div class="fragment little-title" data-fragment-index="2">Что можно еще:</div>
+        <ul>
+            <li class="fragment" data-fragment-index="3">Можно передавать несколько зависимых селекторов и пользоваться всеми возвращаемыми данными</li>
+            <li class="fragment" data-fragment-index="4">Можно отдельно передавать функцию сравнения для определения необходимости пересчета</li>
+            <li class="fragment" data-fragment-index="5">Еще много функционала, можно почитать в документации</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Проблема 3. Асинхронность?</h2>
+        <div class="fragment" style="font-size: 40px;" data-fragment-index="0"><a href="https://redux.js.org/advanced/async-flow">Async Flow</a>: документация redux</div><br>
+        <div class="fragment" style="font-size: 40px;" data-fragment-index="1">Библиотеки для работы с асинхронностью в Redux:</div>
+        <ul>
+            <li class="fragment" data-fragment-index="2"><a href="https://github.com/reduxjs/redux-thunk">redux-thunk</a> (рекомендуется документацией redux)</li>
+            <li class="fragment" data-fragment-index="3"><a href="https://github.com/redux-utilities/redux-promise">redux-promise</a></li>
+            <li class="fragment" data-fragment-index="4"><a href="https://redux-saga.js.org/">redux-saga</a></li>
+            <li class="fragment" data-fragment-index="5"><a href="https://redux-observable.js.org/">redux-observable</a></li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="color: #bbb;">Проблема 3. <span style="color: #000;">Асинхронность</span>?</h2>
+        <div style="font-size: 40px; color: #bbb;">Async Flow: документация redux</div><br>
+        <div style="font-size: 40px; color: #bbb;">Библиотеки для работы с асинхронностью в Redux:</div>
+        <ul>
+            <li style="color: green;">redux-thunk (рекомендуется документацией redux)</li>
+            <li style="color: #bbb;">redux-promise</li>
+            <li style="color: #bbb;">redux-saga</li>
+            <li style="color: #bbb;">redux-observable</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>redux-thunk</h2>
+        <ul>
+            <li>Простая библиотека для работы с side-effect в redux.</li>
+            <li>Разрешает вам писать ваши action creators так, чтобы они возвращали функцию, а не action</li>
+            <li>Можно использовать как для асинхронных действий, так и для более специфичных случаев (например, условного срабатывания события)</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Инициализация redux-thunk</h2>
+        <img class="files-tree" src="./images/tree-store.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Было</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/index.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+
+<span class="hljs-keyword">import</span> { INote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+<span class="hljs-keyword">import</span> reducer, { initialState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./reducers'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> ApplicationState {
+    notes: INote[];
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createStore(
+    reducer,
+    initialState <span class="hljs-keyword">as</span> <span class="hljs-built_in">any</span>
+);</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Стало</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/index.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+<span class="hljs-keyword">import</span> thunk <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-thunk'</span>;
+
+<span class="hljs-keyword">import</span> { INote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+<span class="hljs-keyword">import</span> reducer, { initialState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./reducers'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> ApplicationState {
+    notes: INote[];
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createStore(
+    reducer,
+    initialState <span class="hljs-keyword">as</span> <span class="hljs-built_in">any</span>,
+    applyMiddleware(thunk)
+);</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Добавилась миддлвара thunk</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/index.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 24px;"><span style="opacity: .3"><span class="hljs-keyword">import</span> { createStore } <span class="hljs-keyword">from</span> <span class="hljs-string">'redux'</span>;
+</span><span class="hljs-keyword">import</span> thunk <span class="hljs-keyword">from</span> <span class="hljs-string">'redux-thunk'</span>;<span style="opacity: .3">
+
+<span class="hljs-keyword">import</span> { INote } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+<span class="hljs-keyword">import</span> reducer, { initialState } <span class="hljs-keyword">from</span> <span class="hljs-string">'./reducers'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> ApplicationState {
+    notes: INote[];
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> createStore(
+    reducer,
+    initialState <span class="hljs-keyword">as</span> <span class="hljs-built_in">any</span>,
+    </span>applyMiddleware(thunk)<span style="opacity: .3">
+);</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Выводим данные в редьюсере</h2>
+        <img class="files-tree" src="./images/tree-reducers.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Было</h2>
+        <div style="font-size: 36px;" class="directory">/src/common/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">case</span> ACTIONS.ADD_NOTE: {
+    <span class="hljs-keyword">const</span> {
+        note: newPureNote
+    } = payload <span class="hljs-keyword">as</span> IAddNotePayload;
+
+    <span class="hljs-keyword">const</span> id = <span class="hljs-built_in">Math</span>.max(...notes.map(<span class="hljs-function">(<span class="hljs-params">note: INote</span>) =&gt;</span> note.id)) + <span class="hljs-number">1</span>;
+
+    <span class="hljs-keyword">const</span> newNote: INote = {
+        ...newPureNote,
+        id
+    };
+
+    <span class="hljs-keyword">return</span> { ...state, notes: [...notes, newNote] };
+}</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Стало</h2>
+        <div style="font-size: 36px;" class="directory">/src/common/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">case</span> ACTIONS.ADD_NOTE: {
+    <span class="hljs-keyword">const</span> {
+        note: newPureNote,
+        randomAsyncNumber
+    } = payload <span class="hljs-keyword">as</span> ExtendRandomNumber&lt;IAddNotePayload&gt;;
+
+    <span class="hljs-keyword">const</span> id = <span class="hljs-built_in">Math</span>.max(...notes.map(<span class="hljs-function">(<span class="hljs-params">note: INote</span>) =&gt;</span> note.id)) + <span class="hljs-number">1</span>;
+
+    <span class="hljs-keyword">const</span> newNote: INote = {
+        ...newPureNote,
+        id,
+        randomAsyncNumber
+    };
+
+    <span class="hljs-keyword">return</span> { ...state, notes: [...notes, newNote] };
+}</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Стало</h2>
+        <div style="font-size: 36px;" class="directory">/src/common/reducers.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span style="opacity: .3"><span class="hljs-keyword">case</span> ACTIONS.ADD_NOTE: {
+    <span class="hljs-keyword">const</span> {
+        note: newPureNote,
+        </span>randomAsyncNumber<span style="opacity: .3">
+    } = </span>payload <span class="hljs-keyword">as</span> ExtendRandomNumber&lt;IAddNotePayload&gt;;<span style="opacity: .3">
+
+    <span class="hljs-keyword">const</span> id = <span class="hljs-built_in">Math</span>.max(...notes.map(<span class="hljs-function">(<span class="hljs-params">note: INote</span>) =&gt;</span> note.id)) + <span class="hljs-number">1</span>;
+
+    <span class="hljs-keyword">const</span> newNote: INote = {
+        ...newPureNote,
+        id,
+        </span>randomAsyncNumber<span style="opacity: .3">
+    };
+
+    <span class="hljs-keyword">return</span> { ...state, notes: [...notes, newNote] };
+}</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Создаем асинхронные actions</h2>
+        <img class="files-tree" src="./images/tree-actions.png">
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="font-size: 45px;">Было</h2>
+        <div style="font-size: 28px;" class="directory">/src/common/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 22px;"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNote = <span class="hljs-function">(<span class="hljs-params">{ note }: IAddNotePayload</span>) =&gt;</span> ({
+    <span class="hljs-keyword">type</span>: ACTIONS.ADD_NOTE,
+    payload: {
+        note
+    }
+});</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="font-size: 45px;">Стало</h2>
+        <div style="font-size: 28px;" class="directory">/src/common/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 21px;"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNoteRequest = <span class="hljs-function">(<span class="hljs-params">{ note }: IAddNotePayload</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">dispatch: Dispatch</span>) =&gt;</span> {
+        setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+            <span class="hljs-keyword">const</span> randomAsyncNumber = <span class="hljs-built_in">Math</span>.ceil(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">100</span>);
+
+            dispatch(addNoteSuccess({ note, randomAsyncNumber }))
+        }, <span class="hljs-number">3000</span>)
+    }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNoteSuccess = ({
+    note,
+    randomAsyncNumber
+}: ExtendRandomNumber&lt;IAddNotePayload&gt;) =&gt; ({
+    <span class="hljs-keyword">type</span>: ACTIONS.ADD_NOTE,
+    payload: { note, randomAsyncNumber }
+});</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="font-size: 45px;">Action creator возвращает функцию</h2>
+        <div style="font-size: 28px;" class="directory">/src/common/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 21px;"><span style="opacity: .3"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNoteRequest = <span class="hljs-function">(<span class="hljs-params">{ note }: IAddNotePayload</span>) =&gt;</span> {
+    </span><span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">dispatch: Dispatch</span>) =&gt;</span> {
+        setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+            <span class="hljs-keyword">const</span> randomAsyncNumber = <span class="hljs-built_in">Math</span>.ceil(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">100</span>);
+
+            dispatch(addNoteSuccess({ note, randomAsyncNumber }))
+        }, <span class="hljs-number">3000</span>)
+    }<span style="opacity: .3">
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNoteSuccess = ({
+    note,
+    randomAsyncNumber
+}: ExtendRandomNumber&lt;IAddNotePayload&gt;) =&gt; ({
+    <span class="hljs-keyword">type</span>: ACTIONS.ADD_NOTE,
+    payload: { note, randomAsyncNumber }
+});</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="font-size: 45px;">Функция принимает dispatch и вызывает его</h2>
+        <div style="font-size: 28px;" class="directory">/src/common/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 21px;"><span style="opacity: .3"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNoteRequest = <span class="hljs-function">(<span class="hljs-params">{ note }: IAddNotePayload</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> </span><span class="hljs-function">(<span class="hljs-params">dispatch: Dispatch</span>)</span><span style="opacity: .3"><span class="hljs-function"> =&gt;</span> {
+        setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+            <span class="hljs-keyword">const</span> randomAsyncNumber = <span class="hljs-built_in">Math</span>.ceil(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">100</span>);
+
+            </span>dispatch(addNoteSuccess({ note, randomAsyncNumber }))<span style="opacity: .3">
+        }, <span class="hljs-number">3000</span>)
+    }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNoteSuccess = ({
+    note,
+    randomAsyncNumber
+}: ExtendRandomNumber&lt;IAddNotePayload&gt;) =&gt; ({
+    <span class="hljs-keyword">type</span>: ACTIONS.ADD_NOTE,
+    payload: { note, randomAsyncNumber }
+});</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="font-size: 45px;">В dispatch() передается другой action</h2>
+        <div style="font-size: 28px;" class="directory">/src/common/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 21px;"><span style="opacity: .3"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNoteRequest = <span class="hljs-function">(<span class="hljs-params">{ note }: IAddNotePayload</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">dispatch: Dispatch</span>) =&gt;</span> {
+        setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+            <span class="hljs-keyword">const</span> randomAsyncNumber = <span class="hljs-built_in">Math</span>.ceil(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">100</span>);
+
+            dispatch(</span>addNoteSuccess({ note, randomAsyncNumber })<span style="opacity: .3">)
+        }, <span class="hljs-number">3000</span>)
+    }
+}
+
+<span class="hljs-keyword">export</span> </span><span class="hljs-keyword">const</span> addNoteSuccess<span style="opacity: .3"> = ({
+    note,
+    randomAsyncNumber
+}: ExtendRandomNumber&lt;IAddNotePayload&gt;) =&gt; ({
+    <span class="hljs-keyword">type</span>: ACTIONS.ADD_NOTE,
+    payload: { note, randomAsyncNumber }
+});</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 style="font-size: 45px;">dispatch находится в замыкании и может быть вызван когда угодно</h2>
+        <div style="font-size: 28px;" class="directory">/src/common/actions.ts</div>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="" style="font-size: 20px;"><span style="opacity: .3"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNoteRequest = <span class="hljs-function">(<span class="hljs-params">{ note }: IAddNotePayload</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">dispatch: Dispatch</span>) =&gt;</span> {
+        </span>setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {<span style="opacity: .3">
+            <span class="hljs-keyword">const</span> randomAsyncNumber = <span class="hljs-built_in">Math</span>.ceil(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">100</span>);
+
+            </span>dispatch(<span style="opacity: .3">addNoteSuccess({ note, randomAsyncNumber }))
+        </span>}, <span class="hljs-number">3000</span>)<span style="opacity: .3">
+    }
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNoteSuccess = ({
+    note,
+    randomAsyncNumber
+}: ExtendRandomNumber&lt;IAddNotePayload&gt;) =&gt; ({
+    <span class="hljs-keyword">type</span>: ACTIONS.ADD_NOTE,
+    payload: { note, randomAsyncNumber }
+});</span></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2 class="fragment" data-fragment-index="0">Проблема 4. Слишком много писать</h2>
+        <h3>"Но даже в мой дремучий лес кривой тропой пришел прогресс..."</h3>
+        <ul>
+            <li class="fragment" data-fragment-index="1"><a href="https://redux-toolkit.js.org/">redux-toolkit</a></li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Redux Toolkit</h2>
+        <div style="font-size: 40px;">Библиотека для простой и понятной организации вашего store, включает в себя:</div>
+        <ul>
+            <li class="fragment" data-fragment-index="0">configureStore()</li>
+            <li class="fragment" data-fragment-index="1">createReducer()</li>
+            <li class="fragment" data-fragment-index="2">createAction()</li>
+            <li class="fragment" data-fragment-index="3">createSlice()</li>
+            <li class="fragment" data-fragment-index="4">createSelector()</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>configureStore()</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0">Позволяет сконфигурировать store, передав только reducers</li>
+            <li class="fragment" data-fragment-index="1">Можно передавать middlewares, preloadedState, enhancers, но не обязательно</li>
+            <li class="fragment" data-fragment-index="2">Расширенное использование: см. <a href="https://redux-toolkit.js.org/api/configureStore">документацию</a></li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>configureStore()</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/index.ts</div>
+        <div style="font-size: 40px;">Применяется очень просто:</div>
+        <pre class="fragment" data-fragment-index="0"><code class="language-typescript hljs" data-noescape="" data-trim=""><span class="hljs-keyword">const</span> store = configureStore({
+    reducer,
+    middleware,
+    devTools: process.env.NODE_ENV !== <span class="hljs-string">'production'</span>,
+    preloadedState,
+    enhancers: [reduxBatch]
+});</code></pre>
+        <div class="fragment" data-fragment-index="1">
+            <div style="font-size: 40px;">Или так:</div>
+            <pre class="fragment" data-fragment-index="2"><code class="language-typescript hljs" data-noescape="" data-trim=""><span class="hljs-keyword">const</span> store = configureStore({ reducer });</code></pre>
+        </div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>createReducer()</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0">Позволяет писать чуть меньше кода при создании reducers</li>
+            <li class="fragment" data-fragment-index="1">Включает в себя immer (библиотека для разрешения мутаций store)</li>
+            <li class="fragment" data-fragment-index="2">Рассматривать не будем (потому что существует createSlice())</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>createAction()</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0">Позволяет писать чуть меньше кода при создании actions</li>
+            <li class="fragment" data-fragment-index="1">Позволяет писать actions одной строкой (не вынося отдельно название)</li>
+            <li class="fragment" data-fragment-index="2">Рассматривать не будем (потому что существует createSlice())</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>createSlice()</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0">Позволяет создать actions и reducers для них с согласованными типами</li>
+            <li class="fragment" data-fragment-index="1">На вход можно передать только reducers и initialState, а так же имя slice</li>
+            <li class="fragment" data-fragment-index="2">На выходе получим объект с 4 полями, в числе которых actions и reducers</li>
+            <li class="fragment" data-fragment-index="3">Теперь нельзя добавить action без reducer случайно и тратить время на отладку описок</li>
+            <li class="fragment" data-fragment-index="4">Позволяет создавать несколько одинковых кусочков store с разным названием и разными actions, не увеличивая количество кода</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>createSlice()</h2>
+        <h3>Сигнатура</h3>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim=""><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createSlice</span>(<span class="hljs-params">{
+    reducers: <span class="hljs-built_in">Object</span>&lt;<span class="hljs-built_in">string</span>, ReducerFunction | ReducerAndPrepareObject&gt;
+    initialState: <span class="hljs-built_in">any</span>,
+    name: <span class="hljs-built_in">string</span>,
+    extraReducers?:
+    | <span class="hljs-built_in">Object</span></span></span><string, reducerfunction=""><span class="hljs-function"><span class="hljs-params">
+    | ((builder: ActionReducerMapBuilder</span></span><state><span class="hljs-function"><span class="hljs-params">) =&gt; <span class="hljs-built_in">void</span>)
+}</span>)
+</span></state></string,></code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>createSlice()</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/reducers.ts</div>
+        <h3>Было</h3>
+        <pre style="font-size: 0.9em;"><code class="language-typescript hljs" data-noescape="" data-trim=""><span class="hljs-keyword">const</span> notesReducer = (
+    state: ApplicationState = initialState,
+    action: IAction
+) =&gt; {
+    <span class="hljs-keyword">const</span> { <span class="hljs-keyword">type</span>, payload } = action;
+    <span class="hljs-keyword">const</span> { notes } = state;
+
+    <span class="hljs-keyword">switch</span> (<span class="hljs-keyword">type</span>) {
+        <span class="hljs-keyword">case</span> ACTIONS.ADD_NOTE
+        ...
+        <span class="hljs-keyword">default</span>:
+            <span class="hljs-keyword">return</span> state;
+    }
+};</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>createSlice()</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/actions.ts</div>
+        <h3>Было</h3>
+        <pre style="font-size: 0.9em;"><code class="language-typescript hljs" data-noescape="" data-trim=""><span class="hljs-keyword">import</span> { ..., ACTION } <span class="hljs-keyword">from</span> <span class="hljs-string">'../common/types'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> addNote = <span class="hljs-function">(<span class="hljs-params">{ note }: IAddNotePayload</span>) =&gt;</span> ({
+    ...
+});
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> editNote = <span class="hljs-function">(<span class="hljs-params">{ id, newNote }: IEditNotePayload</span>) =&gt;</span> ({
+    ...
+});
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> changeStatus = <span class="hljs-function">(<span class="hljs-params">{ id, newStatus }: IChangeStatusPayload</span>) =&gt;</span> ({
+    ...
+});</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>createSlice()</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/slice.ts</div>
+        <h3>Стало</h3>
+        <pre style="font-size: 0.9em;"><code class="language-typescript hljs" data-noescape="" data-trim=""><span class="hljs-keyword">const</span> notesStore = createSlice({
+    name: <span class="hljs-string">'notes'</span>,
+    initialState,
+    reducers: {
+        addNote(state, { payload }: PayloadAction&lt;IAddNotePayload&gt;) {
+            ...
+            state.notes.push(newNote); <span class="hljs-comment">// Прямо мутируем стейт</span>
+        },
+        ...
+    }
+});
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> { actions, reducer } = notesStore;</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>createSlice()</h2>
+        <div style="font-size: 36px;" class="directory">/src/store/slice.ts</div>
+        <h3>Стало</h3>
+        <pre style="font-size: 0.9em;"><code class="language-typescript hljs" data-noescape="" data-trim=""><span style="opacity: .3"><span class="hljs-keyword">const</span> notesStore = createSlice({
+    name: <span class="hljs-string">'notes'</span>,
+    initialState,
+    reducers: {
+        addNote(state, { payload }: PayloadAction&lt;IAddNotePayload&gt;) {
+            ...
+            state.notes.push(newNote); <span class="hljs-comment">// Прямо мутируем стейт</span>
+        },
+        ...
+    }
+});</span>
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> { actions, reducer } = notesStore;</code></pre>
+        <div class="post-mark fragment" style="bottom: 15%;" data-fragment-index="0">В одном месте сразу генерируются actions и reducers</div>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>createSelector()</h2>
+        <ul>
+            <li class="fragment" data-fragment-index="0">Заимствованная функция из reselect для того, чтобы не устанавливать отдельную библиотеку</li>
+        </ul>
+    </section>
+
+    <section class="center title-slide future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h1>Итоги</h1>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <ul style="font-size: 0.9em;">
+            <li class="fragment" data-fragment-index="0">Установка</li>
+            <li class="fragment" data-fragment-index="1">Выбираем async flow</li>
+            <li class="fragment" data-fragment-index="2">Какие бывают reducers?</li>
+            <li class="fragment" data-fragment-index="3">Создаем события и обработчики</li>
+            <li class="fragment" data-fragment-index="4">Создаем store</li>
+            <li class="fragment" data-fragment-index="5">Выбираем способ взаимодействия со store</li>
+            <li class="fragment" data-fragment-index="6">Подключаем store к реакту</li>
+            <li class="fragment" data-fragment-index="7">Используем данные из store в реакте</li>
+            <li class="fragment" data-fragment-index="8">Используем действия для изменения store в реакте</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <h3>Установка</h3>
+        <pre><code class="language-typescript hljs" data-noescape="" data-trim="">npm i redux react-redux <span class="hljs-meta">@reduxjs</span>/toolkit</code></pre>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <h3>Выбираем async flow</h3>
+        <ul>
+            <li style="color: green;">redux-thunk (рекомендуется документацией redux)</li>
+            <li style="color: #bbb;">redux-promise</li>
+            <li style="color: #bbb;">redux-saga</li>
+            <li style="color: #bbb;">redux-observable</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <h3>Какие бывают reducers?</h3>
+        <ul>
+            <li class="fragment" data-fragment-index="0">full-state reducer (используют весь store, изменяя его часть или целиком)</li>
+            <li class="fragment" data-fragment-index="1">slice reducers (используют часть store)</li>
+            <li class="fragment" data-fragment-index="2">Как правило используются <b>slice reducers</b></li>
+            <li class="fragment" data-fragment-index="3">Чтобы собрать slice-reducers в один reducer, используется обертка combineReducers()</li>
+            <li class="fragment" data-fragment-index="4">При использовании configureStore() не нужно ничем оборачивать, достаточно просто передать объект</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <h3>Создаем события и обработчики</h3>
+        <ul>
+            <li class="fragment" data-fragment-index="0">createSlice() из библиотеки redux-toolkit для создания actions и reducers</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <h3>Создаем store</h3>
+        <ul>
+            <li class="fragment" data-fragment-index="0">configureStore() из библиотеки redux-toolkit для создания store</li>
+            <li class="fragment" data-fragment-index="1">Включить флаг devTools при локальной разработке</li>
+            <li class="fragment" data-fragment-index="2">Передать initialState, если он отличается от того, который определен в reducers</li>
+            <li class="fragment" data-fragment-index="3">Добавить миддлвару для вашего async flow (thunkMiddleware, sagaMiddleware, примеры есть в документации библиотек)</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <h3 style="font-size: 0.8em;">Выбираем способ взаимодействия со store</h3>
+        <ul style="font-size: 0.85em;">
+            <li class="fragment" data-fragment-index="0">Каждый нижеперечисленный момент одинаково важен и выбрать нужно что-то одно для проекта</li>
+            <li class="fragment" data-fragment-index="1">Можно писать или не писать отдельные селекторы</li>
+            <li class="fragment" data-fragment-index="2">Можно писать селекторы как функции, можно через createSelector()</li>
+            <li class="fragment" data-fragment-index="3">Можно комбинировать или не комбинировать селекторы</li>
+            <li class="fragment" data-fragment-index="4">Можно использовать функции сравнения или не использовать</li>
+            <li class="fragment" data-fragment-index="5">Можно использовать функции сравнения в createSelector()</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <h3>Подключаем store к реакту</h3>
+        <ul>
+            <li class="fragment" data-fragment-index="0">&lt;Provider store={store}&gt;...&lt;/Provider&gt;</li>
+            <li class="fragment" data-fragment-index="1">Оборачивает bundle-компонент приложения и пробрасывает в него store</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <h3>Используем данные из store в реакте</h3>
+        <ul>
+            <li class="fragment" data-fragment-index="1">mapStateToProps в компонентах-классах</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Хозяйке на заметку: готовим Redux</h2>
+        <h3>Используем действия для изменения store в реакте</h3>
+        <ul>
+            <li class="fragment" data-fragment-index="1">mapDispatchToProps в компонентах-классах</li>
+        </ul>
+    </section>
+
+    <section class="little future" hidden="" aria-hidden="true" style="display: none;">
+        <h2>Ссылки</h2>
+        <ul style="font-size: .8em;">
+            <li><a href="https://redux.js.org/">Документация по Redux</a></li>
+            <li><a href="https://habr.com/ru/company/ruvds/blog/437804/">Статья про использование Redux на сервере</a></li>
+            <li><a href="https://martinfowler.com/eaaDev/EventSourcing.html">Один из принципипов redux – EventSourcing</a></li>
+            <li><a href="https://martinfowler.com/bliki/CQRS.html">Один из принципипов redux – CQRS</a></li>
+            <li><a href="https://medium.com/devschacht/neil-fenton-improving-react-and-redux-performance-with-reselect-40f1d3efba89">Повышение производительности React и Redux с Reselect</a></li>
+            <li><a href="https://react-redux.js.org/">Документация по React-Redux</a></li>
+            <li><a href="https://github.com/reduxjs/redux">Репозиторий Redux</a></li>
+            <li><a href="https://github.com/zalmoxisus/redux-devtools-extension">Redux DevTools Extension</a></li>
+        </ul>
+    </section>
+
+    <section class="center title-slide future" hidden="" aria-hidden="true" style="top: 350px; display: none;">
+        <h1>Вопросы?</h1>
+    </section>
+
+</div></div><script src="../@lib/core.js"></script></body></html>

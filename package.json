@@ -15,7 +15,7 @@
     "optimize:icons": "cd $npm_package_config_dir && imagemin --plugin=giflossy --plugin=mozjpeg --plugin=pngquant --plugin=svgo icons/* --out-dir icons",
     "optimize:images": "cd $npm_package_config_dir && imagemin --plugin=giflossy --plugin=mozjpeg --plugin=pngquant --plugin=svgo images/* --out-dir images",
     "optimize:img": "cd $npm_package_config_dir && imagemin --plugin=giflossy --plugin=mozjpeg --plugin=pngquant --plugin=svgo img/* --out-dir img",
-    "pdf": "cd $npm_package_config_dir && decktape -s 640x480 reveal index.html index.pdf",
+    "pdf": "cd ./04-state-management && decktape -s 640x480 reveal index.html index.pdf",
     "process": "npm-run-all optimize:img optimize:images optimize:icons pdf"
   },
   "dependencies": {
